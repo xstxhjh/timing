@@ -18,4 +18,3 @@ vue ui
 -  pug
 -  scss
 -  cdn
--  添加 .md 文件到路由中

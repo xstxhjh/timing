@@ -1,5 +1,6 @@
 <template lang="pug">
-  .app-container timing
+  .app-container
+    router-view
 </template>
 
 <script>

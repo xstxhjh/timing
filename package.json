@@ -13,6 +13,7 @@
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "vue": "^2.6.10",
+    "vue-markdown-loader": "^2.4.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

@@ -1,9 +1,11 @@
 import Vue from 'vue'
-import VueRouter  from 'vue-router'
+import VueRouter from 'vue-router'
 import Layout from '@/components/layout/Layout'
 import RouteView from '@/components/layout/RouteView' // 递归菜单路由时，使用的component
+import mdRoute from '@/components/markdown'
+let mdRouteArr = mdRoute.mdRouteArr
 
-Vue.use(VueRouter )
+Vue.use(VueRouter)
 
 let constantRouterMap = [
   {
@@ -13,26 +15,29 @@ let constantRouterMap = [
       title: 'Layout'
     },
     component: Layout,
-    redirect: '/timing/home',
+    redirect: '/home',
     children: [
       {
-        path: '/timing',
-        name: 'timing',
+        path: 'home',
+        name: 'home',
         meta: {
-          title: '天时',
-          icon: 'timing',
+          title: '首页'
         },
+        component: () => import('@/views/home.vue')
+      }
+    ]
+  },
+  {
+    path: '/md',
+    name: 'md',
+    component: Layout,
+    redirect: `/md/posts/${mdRouteArr[0].path}`,
+    children: [
+      {
+        path: 'posts',
+        name: 'posts',
         component: RouteView,
-        children: [
-          {
-            path: 'home',
-            name: 'home',
-            meta: {
-                title: '首页',
-            },
-            component: () => import('@/views/home.vue')
-        },
-        ]
+        children: mdRouteArr
       }
     ]
   }
@@ -46,7 +51,18 @@ let constantRouterMap = [
   // }
 ]
 
-export default new VueRouter ({
+// {
+//   path: '/timing',
+//   name: 'timing',
+//   meta: {
+//     title: '天时',
+//     icon: 'timing',
+//   },
+//   component: RouteView,
+//   children: []
+// }
+
+export default new VueRouter({
   mode: 'history',
   base: '/',
   routes: constantRouterMap

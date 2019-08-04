@@ -16,7 +16,7 @@ module.exports = {
       'vue-router': 'VueRouter'
     }
   },
-  
+
   chainWebpack: config => {
     config.resolve.alias.set('@', resolve('src')) // 自定义目录别名
 
@@ -41,6 +41,18 @@ module.exports = {
       args[0].cdn = cdn
       return args
     })
+
+    config.module
+      .rule('md')
+      .test(/\.md/)
+      .use('vue-loader')
+      .loader('vue-loader')
+      .end()
+      .use('vue-markdown-loader')
+      .loader('vue-markdown-loader/lib/markdown-compiler')
+      .options({
+        raw: true
+      })
   },
   css: {
     modules: false,
