@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<<<<<<< HEAD
 
 <head>
-=======
-  <head>
->>>>>>> 2bd88d7666daf780c8ffd292e0bae77d847c7a83
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title>timing</title>
-<<<<<<< HEAD
     <style type="text/css">
         #Loading {
             top: 50%;
@@ -154,9 +149,6 @@
             }
         }
     </style>
-=======
-
->>>>>>> 2bd88d7666daf780c8ffd292e0bae77d847c7a83
     <!-- 使用CDN的CSS文件 -->
     <% for (var i in htmlWebpackPlugin.options.cdn &&
     htmlWebpackPlugin.options.cdn.css) { %>
@@ -165,7 +157,6 @@
     <!-- 使用CDN的JS文件 -->
     <% for (var i in htmlWebpackPlugin.options.cdn &&
     htmlWebpackPlugin.options.cdn.js) { %>
-<<<<<<< HEAD
     <script type="text/javascript" src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
     <% } %>
 </head>
@@ -193,22 +184,3 @@
 </body>
 
 </html>
-=======
-    <script
-      type="text/javascript"
-      src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
-    ></script>
-    <% } %>
-  </head>
-  <body>
-    <noscript>
-      <strong
-        >We're sorry but timing doesn't work properly without JavaScript
-        enabled. Please enable it to continue.</strong
-      >
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
-</html>
->>>>>>> 2bd88d7666daf780c8ffd292e0bae77d847c7a83

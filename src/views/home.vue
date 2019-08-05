@@ -1,6 +1,7 @@
 <template lang="pug">
   .app-container
-    router-view
+    .hhhs hshs
+    svg-icon(icon-class="antDesign" style="width: 30px;height: 30px;margin: 0 16px")
 </template>
 
 <script>

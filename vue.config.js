@@ -42,6 +42,7 @@ module.exports = {
       return args
     })
 
+    // markdown
     config.module
       .rule('md')
       .test(/\.md/)
@@ -52,6 +53,21 @@ module.exports = {
       .loader('vue-markdown-loader/lib/markdown-compiler')
       .options({
         raw: true
+      })
+
+    config.module
+      .rule('svg')
+      .exclude.add(resolve('src/assets/svg'))
+      .end()
+    config.module
+      .rule('icons')
+      .test(/\.svg$/)
+      .include.add(resolve('src/assets/svg'))
+      .end()
+      .use('svg-sprite-loader') // 可以将多个svg打包成svg-spite
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]'
       })
   },
   css: {
