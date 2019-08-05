@@ -10,16 +10,8 @@ export default {
 		return {}
 	},
 	created() {
-		this.removeLoadingNode()
 	},
 	methods: {
-		removeLoadingNode() {
-			let getLoadingNode = document.getElementById('Loading')
-			let body = document.body
-			if (getLoadingNode) {
-				body.removeChild(getLoadingNode)
-			}
-		}
 	}
 }
 </script>

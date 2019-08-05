@@ -28,12 +28,13 @@ module.exports = {
       .end()
 
     const cdn = {
-      css: [''],
+      css: ['//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css'],
       js: [
         '//cdn.bootcss.com/vue/2.6.10/vue.min.js',
         '//cdn.bootcss.com/vue-router/3.0.7/vue-router.min.js',
         '//cdn.bootcss.com/vuex/3.1.1/vuex.min.js',
-        '//cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js'
+        '//cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js',
+        '//cdn.bootcss.com/pace/1.0.2/pace.min.js'
       ]
     }
     // html中添加cdn
@@ -77,7 +78,7 @@ module.exports = {
     loaderOptions: {
       sass: {
         // 向全局sass样式传入共享的全局变量
-        data: `@import "@/assets/_variable.scss";`
+        data: `@import "@/assets/variable.scss";`
       }
     }
   }
