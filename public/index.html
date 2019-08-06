@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
@@ -15,47 +16,38 @@
     <!-- 使用CDN的JS文件 -->
     <% for (var i in htmlWebpackPlugin.options.cdn &&
     htmlWebpackPlugin.options.cdn.js) { %>
-    <script
-      type="text/javascript"
-      src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
-    ></script>
+    <script type="text/javascript" src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
     <% } %>
-    <style lang="scss">
-      .pace .pace-progress {
-        background: #33313b; /*进度条颜色*/
-        height: 2px;
-      }
-      .pace .pace-progress-inner {
-        box-shadow: 0 0 10px #33313b, 0 0 5px #33313b; /*阴影颜色*/
-      }
-      .pace .pace-activity {
-        border-top-color: #33313b; /*上边框颜色*/
-        border-left-color: #33313b; /*左边框颜色*/
-      }
-    </style>
-  </head>
 
-  <body>
+    <!-- highlight.js 代码高亮 -->
+    <script>hljs.initHighlightingOnLoad()</script>
+
+    <style lang="scss">
+        .pace .pace-progress {
+            background: #33313b;
+            /*进度条颜色*/
+            height: 2px;
+        }
+        .pace .pace-progress-inner {
+            box-shadow: 0 0 10px #33313b, 0 0 5px #33313b;
+            /*阴影颜色*/
+        }
+        .pace .pace-activity {
+            border-top-color: #33313b;
+            /*上边框颜色*/
+            border-left-color: #33313b;
+            /*左边框颜色*/
+        }
+    </style>
+</head>
+
+<body>
     <noscript>
-      <strong
-        >We're sorry but timing doesn't work properly without JavaScript
-        enabled. Please enable it to continue.</strong
-      >
+        <strong>We're sorry but timing doesn't work properly without JavaScript
+            enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="Loading">
-      <div class="breeding-rhombus-spinner">
-        <div class="rhombus child-1"></div>
-        <div class="rhombus child-2"></div>
-        <div class="rhombus child-3"></div>
-        <div class="rhombus child-4"></div>
-        <div class="rhombus child-5"></div>
-        <div class="rhombus child-6"></div>
-        <div class="rhombus child-7"></div>
-        <div class="rhombus child-8"></div>
-        <div class="rhombus big"></div>
-      </div>
-    </div>
     <div id="app"></div>
     <!-- built files will be auto injected -->
-  </body>
+</body>
+
 </html>

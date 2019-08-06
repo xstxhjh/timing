@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Layout from '@/components/layout/Layout'
-import RouteView from '@/components/layout/RouteView' // 递归菜单路由时，使用的component
+// import RouteView from '@/components/layout/RouteView' // 递归菜单路由时，使用的component
+
+import MarkdownView from '@/components/layout/MarkdownView' // Markdown 使用 vue 组件的路由
 import mdRoute from '@/utils/markdown'
 let mdRouteArr = mdRoute.mdRouteArr
 
@@ -36,7 +38,7 @@ let constantRouterMap = [
             {
                 path: 'posts',
                 name: 'posts',
-                component: RouteView,
+                component: MarkdownView,
                 children: mdRouteArr
             }
         ]
