@@ -12,9 +12,11 @@ fs.readdir("src/pages", "utf-8", function (error, data) {
         fs.readFile(`src/pages/${item}`, "utf-8", function (error, data) {
             let str = data.split('---')[0].replace(/\s*/g, "")
             mdArr.push(str)
+            process.env.MD_FILES = mdArr
         })
     })
 })
+
 
 module.exports = {
     configureWebpack: config => {

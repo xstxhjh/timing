@@ -17,7 +17,9 @@ export default {
   computed: {},
   methods: {},
   created() { },
-  mounted() { }
+  mounted() { 
+      console.log(process.env)
+  }
 }
 </script>
 
