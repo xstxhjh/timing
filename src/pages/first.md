@@ -1,3 +1,9 @@
+[title]: # (哈哈我是注释，不会在浏览器中显示。)
+[date]: # (2019-08-06 14:20:52)
+[categories]: # (文章)
+[description]: # (哈哈我是注释，不会在浏览器中显示。)
+
+---
 
 ```js
 function $initHighlight(block, cls) {
@@ -20,5 +26,5 @@ function $initHighlight(block, cls) {
   )
 }
 
-export  $initHighlight;
+export $initHighlight;
 ```

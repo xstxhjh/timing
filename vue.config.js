@@ -1,10 +1,20 @@
 const path = require('path')
-
 function resolve (dir) {
     return path.join(__dirname, '.', dir)
 }
-
 const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV) // 环境变量
+
+const fs = require("fs")
+let mdArr = []
+fs.readdir("src/pages", "utf-8", function (error, data) {
+    data.map(item => {
+        if (item.match(/\.(\S*)/)[1] != 'md') return
+        fs.readFile(`src/pages/${item}`, "utf-8", function (error, data) {
+            let str = data.split('---')[0].replace(/\s*/g, "")
+            mdArr.push(str)
+        })
+    })
+})
 
 module.exports = {
     configureWebpack: config => {
@@ -19,13 +29,6 @@ module.exports = {
 
     chainWebpack: config => {
         config.resolve.alias.set('@', resolve('src')) // 自定义目录别名
-
-        config.module // 引用 pug
-            .rule('pug')
-            .test(/\.pug$/)
-            .use('pug-plain-loader')
-            .loader('pug-plain-loader')
-            .end()
 
         const cdn = {
             css: [
@@ -47,8 +50,17 @@ module.exports = {
             return args
         })
 
+        // 引用 pug
+        config.module
+            .rule('pug')
+            .test(/\.pug$/)
+            .use('pug-plain-loader')
+            .loader('pug-plain-loader')
+            .end()
+
         // markdown
-        config.module.rule('md')
+        config.module
+            .rule('md')
             .test(/\.md/)
             .use('vue-loader')
             .loader('vue-loader')
@@ -59,6 +71,7 @@ module.exports = {
                 raw: true
             })
 
+        // svg
         config.module
             .rule('svg')
             .exclude.add(resolve('src/assets/svg'))

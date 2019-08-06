@@ -20,6 +20,7 @@ export default {
   mounted() { }
 }
 </script>
+
 <style scoped lang="scss">
 .app-container{
     background: rgba($color: #000000, $alpha: 0.5);

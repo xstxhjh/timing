@@ -13,7 +13,6 @@ mdArr.map(item => {
         name: fileName,
         path: pathName,
         component: () => import(`@/pages/${fileName}`)
-
     })
 })
 
