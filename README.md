@@ -10,8 +10,9 @@ yarn run build
 
 vue ui
 ```
+<!-- npx browserslist 查看浏览器兼容情况 -->
 
-## description
+## Project progress
 -  vuex
 -  axios
 -  vue-router
@@ -23,3 +24,6 @@ vue ui
 -  读取 pages 下的 .md 配置
 -  pace 加载动画
 -  highlight.js 代码高亮
+
+## description
+    基于 vue 搭建的轻量级单页面博客

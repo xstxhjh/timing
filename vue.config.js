@@ -22,6 +22,8 @@ dirSync.map(item => {
 })
 process.env.VUE_APP_MD_FILES = JSON.stringify(mdArr)
 
+// 移除 console 和注释
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
     configureWebpack: config => {
@@ -33,10 +35,37 @@ module.exports = {
             pace: 'pace',
             'vue-router': 'VueRouter'
         }
+        if (IS_PROD) {
+            const plugins = []
+            plugins.push(
+                new UglifyJsPlugin({
+                    uglifyOptions: {
+                        comments: false, // 移除注释
+                        compress: {
+                            warnings: false,
+                            drop_console: true,
+                            drop_debugger: false,
+                            pure_funcs: ['console.log'] // 移除 console
+                        }
+                    },
+                    sourceMap: false,
+                    parallel: true
+                })
+            )
+            config.plugins = [
+                ...config.plugins,
+                ...plugins
+            ]
+        }
     },
 
     chainWebpack: config => {
         config.resolve.alias.set('@', resolve('src')) // 自定义目录别名
+
+        config.optimization.minimize(true) // 压缩代码
+        config.optimization.splitChunks({  // 分隔代码
+            chunks: 'all'
+        })
 
         const cdn = {
             css: [
