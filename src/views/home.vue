@@ -16,7 +16,32 @@ export default {
 	computed: {},
 	methods: {},
 	created() {},
-	mounted() {}
+	mounted() {
+		this.$axios('https://easy-mock.com/mock/5c9ae664bbbd4054ae3c51c9/chirenmeng/test').then(res => {
+			console.log(res)
+		})
+		function timeout(ms) {
+			return new Promise((resolve, reject) => {
+				setTimeout(resolve, ms, 'finish')
+			})
+		}
+		async function asyncTimeSys() {
+			await timeout(1000)
+			console.log('第一层异步结束！')
+			await timeout(1000)
+			console.log('第二层异步结束！')
+			await timeout(1000)
+			console.log('第三层异步结束！')
+			await timeout(1000)
+			console.log('第四层异步结束！')
+			await timeout(1000)
+			console.log('第五层异步结束！')
+			return 'all finish'
+		}
+		asyncTimeSys().then(value => {
+			console.log(value)
+		})
+	}
 }
 </script>
 

@@ -63,7 +63,7 @@ module.exports = {
         config.resolve.alias.set('@', resolve('src')) // 自定义目录别名
 
         config.optimization.minimize(true) // 压缩代码
-        config.optimization.splitChunks({  // 分隔代码
+        config.optimization.splitChunks({  // 分割代码
             chunks: 'all'
         })
 
