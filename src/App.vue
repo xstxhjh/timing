@@ -12,7 +12,7 @@ export default {
 	created() {
         let data = JSON.parse(process.env.VUE_APP_MD_FILES)
         let fileContent = data[0].fileContent
-        console.log(fileContent.match(/\[title\]\:\#\((.*?)\)/)[1])
+        console.log(fileContent.match(/\[title\]:#\((.*?)\)/)[1])
 	},
 	mounted() {},
 	methods: {}
