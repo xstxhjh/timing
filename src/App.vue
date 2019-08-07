@@ -4,13 +4,17 @@
 </template>
 
 <script>
-
 export default {
 	name: 'app',
 	data() {
 		return {}
 	},
-	created() {},
+	created() {
+        let data = JSON.parse(process.env.VUE_APP_MD_FILES)
+        let fileContent = data[0].fileContent
+        console.log(fileContent.match(/\[title\]\:\#\((.*?)\)/)[1])
+	},
+	mounted() {},
 	methods: {}
 }
 </script>

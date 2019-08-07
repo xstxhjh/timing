@@ -19,8 +19,12 @@
     <script type="text/javascript" src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
     <% } %>
 
-    <!-- highlight.js 代码高亮 -->
-    <script>hljs.initHighlightingOnLoad()</script>
+    <script>
+        // highlight.js 代码高亮
+        hljs.initHighlightingOnLoad()
+        // 进度条配置
+        window.Pace.options.ajax = false
+    </script>
 
     <style lang="scss">
         .pace .pace-progress {
@@ -28,10 +32,12 @@
             /*进度条颜色*/
             height: 2px;
         }
+
         .pace .pace-progress-inner {
             box-shadow: 0 0 10px #33313b, 0 0 5px #33313b;
             /*阴影颜色*/
         }
+
         .pace .pace-activity {
             border-top-color: #33313b;
             /*上边框颜色*/

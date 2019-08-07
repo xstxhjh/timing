@@ -6,25 +6,22 @@
 
 <script>
 export default {
-  components: {},
-  props: {},
-  data() {
-    return {
-    }
-  },
-  watch: {},
-  filters: {},
-  computed: {},
-  methods: {},
-  created() { },
-  mounted() { 
-      console.log(process.env)
-  }
+	components: {},
+	props: {},
+	data() {
+		return {}
+	},
+	watch: {},
+	filters: {},
+	computed: {},
+	methods: {},
+	created() {},
+	mounted() {}
 }
 </script>
 
 <style scoped lang="scss">
-.app-container{
-    background: rgba($color: #000000, $alpha: 0.5);
+.app-container {
+	background: rgba($color: #000000, $alpha: 0.5);
 }
 </style>

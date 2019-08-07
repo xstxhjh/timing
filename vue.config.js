@@ -1,21 +1,26 @@
+
+const fs = require("fs")
 const path = require('path')
+const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV) // 环境变量
 function resolve (dir) {
     return path.join(__dirname, '.', dir)
 }
-const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV) // 环境变量
 
-const fs = require("fs")
-let mdArr = []
-fs.readdir("src/pages", "utf-8", function (error, data) {
-    data.map(item => {
-        if (item.match(/\.(\S*)/)[1] != 'md') return
-        fs.readFile(`src/pages/${item}`, "utf-8", function (error, data) {
-            let str = data.split('---')[0].replace(/\s*/g, "")
-            mdArr.push(str)
-            process.env.MD_FILES = mdArr
-        })
+// 读取 md 文件内容
+let mdArr = [],
+    str = '';
+let dirSync = fs.readdirSync(resolve('src/pages'), "utf-8")
+dirSync.map(item => {
+    if (item.match(/\.(\S*)/)[1] != 'md') return
+    let fileSync = fs.readFileSync(resolve(`src/pages/${item}`), "utf-8")
+    let str = fileSync.split('---')[0].replace(/\s*/g, "")
+    mdArr.push({
+        fileName: item,
+        routeName: item.match(/(\S*)\./)[1],
+        fileContent: str
     })
 })
+process.env.VUE_APP_MD_FILES = JSON.stringify(mdArr)
 
 
 module.exports = {
@@ -25,6 +30,7 @@ module.exports = {
             vue: 'Vue',
             vuex: 'Vuex',
             axios: 'axios',
+            pace: 'pace',
             'vue-router': 'VueRouter'
         }
     },
