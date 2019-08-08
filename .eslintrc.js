@@ -13,6 +13,7 @@ module.exports = {
     parser: 'babel-eslint'
   },
   globals: {
-    Pace: true
+    Pace: true,
+    TweenMax: true
   }
 }

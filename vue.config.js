@@ -33,7 +33,6 @@ module.exports = {
             vuex: 'Vuex',
             axios: 'axios',
             pace: 'pace',
-            moment: 'moment',
             'vue-router': 'VueRouter'
         }
         if (IS_PROD) {
@@ -80,7 +79,8 @@ module.exports = {
                 '//cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js',
                 '//cdn.bootcss.com/pace/1.0.2/pace.min.js',
                 '//cdn.bootcss.com/highlight.js/9.15.9/highlight.min.js',
-                '//cdn.bootcss.com/moment.js/2.24.0/moment.min.js'
+                '//cdn.bootcss.com/moment.js/2.24.0/moment.min.js',
+                '//cdn.bootcss.com/gsap/latest/TweenMax.min.js'
             ]
         }
         // html中添加cdn

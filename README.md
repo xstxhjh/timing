@@ -10,7 +10,7 @@ yarn run build
 
 vue ui
 ```
-<!-- npx browserslist 查看浏览器兼容情况 -->
+<!-- npx browserslist 查看浏览器css兼容情况 -->
 
 ## Project progress
 -  vuex
@@ -25,5 +25,7 @@ vue ui
 -  pace 加载动画
 -  highlight.js 代码高亮
 -  引入了 Moment.js
+-  引入了 TweenMax 缓动库
+
 ## description
 基于 vue 搭建的轻量级单页面博客

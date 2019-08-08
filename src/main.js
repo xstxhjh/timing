@@ -6,14 +6,13 @@ import axios from './utils/request'
 import './permission' // 路由权限控制
 import '@/utils/icons' // svg-icon组件
 
-
+Vue.prototype.$TweenMax = TweenMax
 Vue.prototype.$axios = axios
-
 
 Vue.config.productionTip = false
 
 new Vue({
-    router,
-    store,
-    render: h => h(App)
+  router,
+  store,
+  render: h => h(App)
 }).$mount('#app')
