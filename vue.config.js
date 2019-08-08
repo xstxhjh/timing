@@ -127,13 +127,11 @@ module.exports = {
             })
     },
     css: {
-        modules: false,
-        extract: IS_PROD,
-        sourceMap: false,
         loaderOptions: {
             sass: {
                 // 向全局sass样式传入共享的全局变量
-                data: `@import "@/assets/variable.scss";`
+                data: `@import "@/assets/variable.scss";
+                       @import "@/assets/global.scss";`
             }
         }
     }
