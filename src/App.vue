@@ -27,21 +27,8 @@ html {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-@media (min-width: 640px) {
-	#app {
-		font-size: 1.8rem;
-	}
-}
-
-@media (min-width: 960px) {
-	#app {
-		font-size: 2rem;
-	}
-}
-
-@media (min-width: 1200px) {
-	#app {
-		font-size: 2.2rem;
-	}
+#app {
+	height: 100vh;
+	font-size: 2rem;
 }
 </style>

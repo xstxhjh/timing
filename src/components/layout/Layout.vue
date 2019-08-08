@@ -1,13 +1,16 @@
 <template lang="pug">
     .main-layout
-        .button-gradient NEXT
         .nav-views
-            .nav-views-item 不可思议的CSS
-            .nav-views-item 导航栏
-            .nav-views-item 光标下划线跟随
-            .nav-views-item PURE CSS
-            .nav-views-item Coco
-        router-view
+            .nav-views-item 首页
+            .nav-views-item 文章
+            .nav-views-item 分类
+            .nav-views-item 简介
+
+        router-view.layout-content
+
+        .layout-end
+            a.end-trapezoid(href="https://github.com/xstxhjh" target="_blank") chirenmeng
+
 </template>
 
 
@@ -36,22 +39,44 @@ export default {
 	justify-content: center;
 }
 
+.layout-content {
+	width: 100%;
+	flex: 1;
+}
+
+.layout-end {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.end-trapezoid {
+	color: #fff;
+	width: 200px;
+	height: 0;
+	display: flex;
+	justify-content: center;
+	border: 1rem solid #fff;
+	border-top: 0 solid;
+	border-bottom: 3rem solid #333;
+	text-decoration: none;
+}
+
 .nav-views {
 	display: flex;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
 	user-select: none;
+	margin-top: 3rem;
 }
 
 .nav-views-item {
 	color: #333;
-    white-space: nowrap;
-    padding: 1px 20px 0 20px;
+	white-space: nowrap;
+	padding: 2px 2rem 0 2rem;
 	transition: 0.2s all linear;
 	cursor: pointer;
-    position: relative;
+	position: relative;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
 }
 
 .nav-views-item::before {
