@@ -1,8 +1,9 @@
 <template lang="pug">
   .app-container
     .box-left
-      img.avatar(src='https://i.loli.net/2019/08/05/Lo9nyjTO5ZUN6im.jpg')
-      <div :class="['icon nav-icon',navIconOpen?'open':'']" @click="navIconChange">
+      .box-left-content
+        img.avatar(src='https://i.loli.net/2019/08/05/Lo9nyjTO5ZUN6im.jpg')
+      <div :class="['nav-icon',navIconOpen?'open':'']" @click="navIconChange">
         <span></span>
         <span></span>
         <span></span>
@@ -15,15 +16,12 @@
         .nav-views-item About
 
       router-view.layout-content
-
-      div(style="height:200px;")
+      .button-gradient BACK
+      div(style="height:2000px;")
 
       .layout-end(@mouseenter="trapezoidMouseenter" @mouseleave="trapezoidMouseleave")
           a.end-trapezoid(href="https://github.com/xstxhjh" target="_blank")
             span Chirenmeng
-    .box-right
-      .button-gradient NEXT
-
 </template>
 
 
@@ -44,19 +42,34 @@ export default {
     console.log()
   },
   methods: {
-    navIconChange() {
+    navIconChange() { // 点击左边菜单图标按钮
       this.navIconOpen = !this.navIconOpen
+      if (!this.navIconOpen) {
+        TweenMax.to('.box-left', .4, {
+          width: '0'
+        })
+        TweenMax.to('.avatar', .2, {
+          opacity: 0
+        })
+      } else {
+        TweenMax.to('.box-left', .2, {
+          width: '32rem'
+        })
+        TweenMax.to('.avatar', .2, {
+          opacity: 1
+        })
+      }
     },
-    trapezoidMouseenter() {
+    trapezoidMouseenter() { // 鼠标移入改变博客按钮样式
       TweenMax.to('.end-trapezoid', .3, {
-        width: '210px',
-        alpha: 0.5,
+        width: '21rem',
+        opacity: 0.5,
       })
     },
     trapezoidMouseleave() {
       TweenMax.to('.end-trapezoid', .3, {
-        width: '200px',
-        alpha: 1,
+        width: '20rem',
+        opacity: 1,
       })
     }
   }
@@ -66,26 +79,30 @@ export default {
 .app-container {
   width: 100%;
   min-height: 100%;
-  display: grid;
-  grid-template-columns: 30% auto 30%;
+  display: flex;
 }
 
 .box-left {
-  text-align: center;
-  .avatar {
-    width: 8rem;
-    height: 8rem;
-    border: 0.4rem solid $theme-color;
-    border-radius: 50%;
-    position: sticky;
-    top: 20%;
-    box-shadow: 0 0 1rem #ccc;
-    border: 0.1rem solid #ddd;
-    transition: transform 4s ease;
+  background: $theme-dark-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .box-left-content {
+    position: fixed;
+    top: 2%;
+    .avatar {
+      width: 10rem;
+      height: 10rem;
+      border: 0.4rem solid $theme-color;
+      border-radius: 50%;
+      box-shadow: 0 0 1rem rgba(0, 0, 0, 0.8);
+      border: 0.2rem solid rgba(221, 221, 221, 0.3);
+      transition: transform 4s ease;
+      opacity: 0;
+    }
   }
 
   .avatar:hover {
-    box-shadow: 0 0 1rem #888;
     transform: rotateZ(3600deg);
   }
 }
@@ -179,20 +196,35 @@ export default {
 
 // 左边菜单图标按钮
 .nav-icon {
-  width: 30px;
-  height: 24px;
+  width: 18px;
+  height: 15px;
   margin: 10px;
-  position: relative;
-  cursor: pointer;
+  position: fixed;
+  bottom: 4rem;
+  left: 3rem;
   display: inline-block;
+  cursor: pointer;
 }
+
+.nav-icon::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160%;
+  height: 190%;
+  border-radius: 0.2rem;
+  background: $theme-dark-color;
+}
+
 .nav-icon span {
-  background-color: $theme-color;
+  background-color: #fff;
   position: absolute;
   border-radius: 2px;
   transition: 0.3s cubic-bezier(0.8, 0.5, 0.2, 1.4);
   width: 100%;
-  height: 4px;
+  height: 3px;
   transition-duration: 500ms;
 }
 .nav-icon span:nth-child(1) {
@@ -200,7 +232,7 @@ export default {
   left: 0;
 }
 .nav-icon span:nth-child(2) {
-  top: 10px;
+  top: 6px;
   left: 0;
   opacity: 1;
 }
@@ -219,7 +251,7 @@ export default {
 }
 .nav-icon.open span:nth-child(1) {
   transform: rotate(45deg);
-  top: 12px;
+  top: 6px;
 }
 .nav-icon.open span:nth-child(2) {
   transform: translate(-10px, 0);
@@ -227,6 +259,6 @@ export default {
 }
 .nav-icon.open span:nth-child(3) {
   transform: rotate(-45deg);
-  top: 12px;
+  top: 6px;
 }
 </style>
