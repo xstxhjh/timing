@@ -1,16 +1,28 @@
 <template lang="pug">
-    .main-layout
-        .nav-views
-            .nav-views-item Home
-            .nav-views-item Archives
-            .nav-views-item Categories
-            .nav-views-item About
+  .app-container
+    .box-left
+      img.avatar(src='https://i.loli.net/2019/08/05/Lo9nyjTO5ZUN6im.jpg')
+      <div :class="['icon nav-icon',navIconOpen?'open':'']" @click="navIconChange">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    .box-center
+      .nav-views
+        .nav-views-item Home
+        .nav-views-item Archives
+        .nav-views-item Categories
+        .nav-views-item About
 
-        router-view.layout-content
+      router-view.layout-content
 
-        .layout-end(@mouseenter="trapezoidMouseenter" @mouseleave="trapezoidMouseleave")
-            a.end-trapezoid(href="https://github.com/xstxhjh" target="_blank")
-              span Chirenmeng
+      div(style="height:200px;")
+
+      .layout-end(@mouseenter="trapezoidMouseenter" @mouseleave="trapezoidMouseleave")
+          a.end-trapezoid(href="https://github.com/xstxhjh" target="_blank")
+            span Chirenmeng
+    .box-right
+      .button-gradient NEXT
 
 </template>
 
@@ -20,7 +32,9 @@ export default {
   name: 'layout',
   components: {},
   data() {
-    return {}
+    return {
+      navIconOpen: false
+    }
   },
   watch: {},
   filters: {},
@@ -30,6 +44,9 @@ export default {
     console.log()
   },
   methods: {
+    navIconChange() {
+      this.navIconOpen = !this.navIconOpen
+    },
     trapezoidMouseenter() {
       TweenMax.to('.end-trapezoid', .3, {
         width: '210px',
@@ -46,26 +63,53 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-.main-layout {
+.app-container {
+  width: 100%;
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: 30% auto 30%;
+}
+
+.box-left {
+  text-align: center;
+  .avatar {
+    width: 8rem;
+    height: 8rem;
+    border: 0.4rem solid $theme-color;
+    border-radius: 50%;
+    position: sticky;
+    top: 20%;
+    box-shadow: 0 0 1rem #ccc;
+    border: 0.1rem solid #ddd;
+    transition: transform 4s ease;
+  }
+
+  .avatar:hover {
+    box-shadow: 0 0 1rem #888;
+    transform: rotateZ(3600deg);
+  }
+}
+
+.box-center {
   width: 100%;
   min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+
+  .layout-content {
+    width: 100%;
+    flex: 1;
+  }
+
+  .layout-end {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
-.layout-content {
-  width: 100%;
-  flex: 1;
-}
-
-.layout-end {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+// 中间 底部博客按钮
 .end-trapezoid {
   font-size: 2rem;
   color: #fff;
@@ -82,10 +126,11 @@ export default {
   user-select: none;
 
   span {
-    margin-top: .5rem;
+    margin-top: 0.5rem;
   }
 }
 
+// 中间导航栏
 .nav-views {
   display: flex;
   user-select: none;
@@ -130,5 +175,58 @@ export default {
 .nav-views-item:active {
   background: $theme-color;
   color: #fff;
+}
+
+// 左边菜单图标按钮
+.nav-icon {
+  width: 30px;
+  height: 24px;
+  margin: 10px;
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+}
+.nav-icon span {
+  background-color: $theme-color;
+  position: absolute;
+  border-radius: 2px;
+  transition: 0.3s cubic-bezier(0.8, 0.5, 0.2, 1.4);
+  width: 100%;
+  height: 4px;
+  transition-duration: 500ms;
+}
+.nav-icon span:nth-child(1) {
+  top: 0;
+  left: 0;
+}
+.nav-icon span:nth-child(2) {
+  top: 10px;
+  left: 0;
+  opacity: 1;
+}
+.nav-icon span:nth-child(3) {
+  bottom: 0;
+  left: 0;
+}
+.nav-icon:not(.open):hover span:nth-child(1) {
+  transform: scaleX(0.8);
+}
+.nav-icon:not(.open):hover span:nth-child(2) {
+  transform: scaleX(0.5);
+}
+.nav-icon:not(.open):hover span:nth-child(3) {
+  transform: scaleX(0.8);
+}
+.nav-icon.open span:nth-child(1) {
+  transform: rotate(45deg);
+  top: 12px;
+}
+.nav-icon.open span:nth-child(2) {
+  transform: translate(-10px, 0);
+  opacity: 0;
+}
+.nav-icon.open span:nth-child(3) {
+  transform: rotate(-45deg);
+  top: 12px;
 }
 </style>
