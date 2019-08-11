@@ -10,10 +10,10 @@
       </div>
     .box-center
       .nav-views
-        .nav-views-item Home
-        .nav-views-item Archives
-        .nav-views-item Categories
-        .nav-views-item About
+        div(:class="['nav-views-item',currentRouteName=='home'?'nav-views-item-active':'']") Home
+        div(:class="['nav-views-item',currentRouteName=='archives'?'nav-views-item-active':'']") Archives
+        div(:class="['nav-views-item',currentRouteName=='categories'?'nav-views-item-active':'']") Categories
+        div(:class="['nav-views-item',currentRouteName=='about'?'nav-views-item-active':'']") About
 
       router-view.layout-content
       .button-gradient BACK
@@ -31,16 +31,23 @@ export default {
   components: {},
   data() {
     return {
-      navIconOpen: false
+      navIconOpen: false,
+      currentRouteName: ''
     }
   },
-  watch: {},
+  watch: {
+    $route: {
+      handler(res) {
+        this.currentRouteName = res.name
+        console.log(this.currentRouteName)
+      },
+      immediate: true
+    },
+  },
   filters: {},
   computed: {},
   created() { },
-  mounted() {
-    console.log()
-  },
+  mounted() { },
   methods: {
     navIconChange() { // 点击左边菜单图标按钮
       this.navIconOpen = !this.navIconOpen
@@ -147,11 +154,17 @@ export default {
   }
 }
 
-// 中间导航栏
+// 中间的导航栏
 .nav-views {
+  position: sticky;
+  top: 0;
   display: flex;
   user-select: none;
   margin-top: 3rem;
+  mix-blend-mode: exclusion;
+  border: 0 solid;
+  border-top: 0 solid;
+  border-bottom: 0.1rem solid #fff;
 }
 
 .nav-views-item {
@@ -161,8 +174,10 @@ export default {
   transition: 0.2s all linear;
   cursor: pointer;
   position: relative;
-  border-top-left-radius: 0.2rem;
-  border-top-right-radius: 0.2rem;
+}
+
+.nav-views-item-active {
+  font-weight: bold;
 }
 
 .nav-views-item::before {

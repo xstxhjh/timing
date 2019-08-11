@@ -5,12 +5,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-
+    markdownAll: []
   },
   mutations: {
-
+    setMarkdownAll(state, arr) {
+      state.markdownAll = arr
+    }
   },
-  actions: {
-
-  }
+  actions: {}
 })
