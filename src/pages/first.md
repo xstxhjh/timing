@@ -2,8 +2,11 @@
 [date]: # (2019-08-06 14:20:52)
 [categories]: # (文章)
 [description]: # (哈哈我是注释，不会在浏览器中显示。)
+[image]: # (https://i.loli.net/2019/08/11/OaHt4CsZIPVYMG2.jpg)
 
 ---
+
+
 
 ```js
 function $initHighlight(block, cls) {

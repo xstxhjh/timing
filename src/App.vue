@@ -11,12 +11,24 @@ export default {
   },
   created() {
     let data = JSON.parse(process.env.VUE_APP_MD_FILES)
-    let fileContent = data[0].fileContent
-    console.log(fileContent.match(/\[title\]:#\((.*?)\)/)[1])
-    console.log(fileContent.match(/\[date\]:#\((.*?)\)/)[1])
-    console.log(fileContent.match(/\[categories\]:#\((.*?)\)/)[1])
-    console.log(fileContent.match(/\[description\]:#\((.*?)\)/)[1])
-
+    let arr = []
+    data.map(item => {
+      let fileContent = item.fileContent
+      let title = fileContent.match(/\[title\]:#\((.*?)\)/)[1]
+      let date = fileContent.match(/\[date\]:#\((.*?)\)/)[1]
+      let categories = fileContent.match(/\[categories\]:#\((.*?)\)/)[1]
+      let description = fileContent.match(/\[description\]:#\((.*?)\)/)[1]
+      let image = fileContent.match(/\[image\]:#\((.*?)\)/)[1]
+      arr.push({
+        title,
+        date,
+        categories,
+        description,
+        image
+      })
+      this.$store.commit('setMarkdownAll', arr)
+      console.log(this.$store.state)
+    })
   },
   mounted() { },
   methods: {}
