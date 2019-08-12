@@ -145,8 +145,8 @@ export default {
 	padding-top: 1rem;
 	display: flex;
 	justify-content: center;
-	border: 1.4rem solid #fff;
-	border-top: 0 solid;
+	border: 1.4rem solid transparent;
+	border-top: 0 solid transparent;
 	border-bottom: 3.1rem solid $theme-color;
 	text-shadow: 0 0 0.3rem rgba(255, 255, 255, 0.5);
 	text-decoration: none;
@@ -177,6 +177,12 @@ export default {
 	transition: 0.2s all linear;
 	position: relative;
 	cursor: pointer;
+}
+
+@media screen and (max-width: 860px) {
+	.nav-views-item {
+		padding: 0.2rem 1rem;
+	}
 }
 
 .nav-views-item-active {

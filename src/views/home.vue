@@ -75,7 +75,7 @@ export default {
 
 @media screen and (max-width: 860px) {
 	.posts-expand {
-		width: 90%;
+		width: 96%;
 	}
 }
 
