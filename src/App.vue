@@ -27,7 +27,7 @@ export default {
 				image
 			})
 			this.$store.commit('setMarkdownAll', arr)
-			console.log(this.$store.state)
+			console.log(this.$store.state.markdownAll)
 		})
 	},
 	mounted() {},
@@ -76,5 +76,10 @@ body,
 	#app {
 		font-size: 2.3rem;
 	}
+}
+
+::selection {
+	background: #252a31;
+	color: #fff;
 }
 </style>

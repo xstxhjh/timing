@@ -175,8 +175,8 @@ export default {
 	white-space: nowrap;
 	padding: 0.2rem 2rem;
 	transition: 0.2s all linear;
-	cursor: pointer;
 	position: relative;
+	cursor: pointer;
 }
 
 .nav-views-item-active {
