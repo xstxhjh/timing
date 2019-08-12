@@ -1,6 +1,7 @@
 <template lang="pug">
     .container
       svg-icon(icon-class="antDesign" style="width: 30px;height: 30px;margin: 0 16px")
+      .button-gradient BACK
 </template>
 
 <script>
@@ -51,9 +52,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.app-container {
-  display: grid;
-  grid-template-columns: 30% auto 30%;
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 </style>

@@ -22,3 +22,7 @@
     background-image: linear-gradient(to right, #fff 0%, $theme-color 50%, $theme-color 100%);
     background-position: right center;
 }
+
+.button-gradient:active{
+    opacity: 0.5;
+}

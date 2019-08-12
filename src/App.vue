@@ -5,77 +5,76 @@
 
 <script>
 export default {
-  name: 'app',
-  data() {
-    return {}
-  },
-  created() {
-    let data = JSON.parse(process.env.VUE_APP_MD_FILES)
-    let arr = []
-    data.map(item => {
-      let fileContent = item.fileContent
-      let title = fileContent.match(/\[title\]:#\((.*?)\)/)[1]
-      let date = fileContent.match(/\[date\]:#\((.*?)\)/)[1]
-      let categories = fileContent.match(/\[categories\]:#\((.*?)\)/)[1]
-      let description = fileContent.match(/\[description\]:#\((.*?)\)/)[1]
-      let image = fileContent.match(/\[image\]:#\((.*?)\)/)[1]
-      arr.push({
-        title,
-        date,
-        categories,
-        description,
-        image
-      })
-      this.$store.commit('setMarkdownAll', arr)
-      console.log(this.$store.state)
-    })
-  },
-  mounted() { },
-  methods: {}
+	name: 'app',
+	data() {
+		return {}
+	},
+	created() {
+		let data = JSON.parse(process.env.VUE_APP_MD_FILES)
+		let arr = []
+		data.map(item => {
+			let fileContent = item.fileContent
+			let title = fileContent.match(/\[title\]:#\((.*?)\)/)[1]
+			let date = fileContent.match(/\[date\]:#\((.*?)\)/)[1]
+			let categories = fileContent.match(/\[categories\]:#\((.*?)\)/)[1]
+			let description = fileContent.match(/\[description\]:#\((.*?)\)/)[1]
+			let image = fileContent.match(/\[image\]:#\((.*?)\)/)[1]
+			arr.push({
+				title,
+				date,
+				categories,
+				description,
+				image
+			})
+			this.$store.commit('setMarkdownAll', arr)
+			console.log(this.$store.state)
+		})
+	},
+	mounted() {},
+	methods: {}
 }
 </script>
 
 <style lang="scss">
 html {
-  font-size: 62.5%;
-  font-family: "Monaco", "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #333;
+	color: #333;
+	font-size: 62.5%;
+	font-family: 'Monaco', 'Avenir', Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	overflow-x: hidden;
 }
 
+html,
+body,
 #app {
-  height: 100vh;
+	height: 100%;
 }
 
-@media (min-width: 300px) {
-  #app {
-    font-size: 1.4rem;
-  }
+@media (max-width: 600px) {
+	#app {
+		font-size: 1.5rem;
+	}
 }
-@media (min-width: 520px) {
-  #app {
-    font-size: 1.6rem;
-  }
+@media (min-width: 600px) {
+	#app {
+		font-size: 1.7rem;
+	}
 }
-@media (min-width: 640px) {
-  #app {
-    font-size: 1.8rem;
-  }
+@media (min-width: 768px) {
+	#app {
+		font-size: 1.9rem;
+	}
 }
-@media (min-width: 960px) {
-  #app {
-    font-size: 2rem;
-  }
+@media (min-width: 992px) {
+	#app {
+		font-size: 2.1rem;
+	}
 }
-@media (min-width: 1180px) {
-  #app {
-    font-size: 2.2rem;
-  }
-}
-@media (min-width: 1400px) {
-  #app {
-    font-size: 2.4rem;
-  }
+@media (min-width: 1200px) {
+	#app {
+		font-size: 2.3rem;
+	}
 }
 </style>
