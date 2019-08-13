@@ -163,6 +163,12 @@ export default {
 	}
 }
 
+@media screen and (max-width: 860px) {
+	.end-trapezoid {
+		transform: scale(0.5, 0.5) translate(0, 50%);
+	}
+}
+
 // 中间的导航栏
 .nav-views {
 	position: sticky;
