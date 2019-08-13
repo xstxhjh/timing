@@ -14,18 +14,43 @@ export default {
 
 <style lang="scss" scoped>
 .router-post-body {
-	font-size: 1.4rem;
-    padding: 0 25%;
-    margin-top: 2rem;
+	font-family: 'Monda', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+	font-size: 1.6rem;
+	color: $theme-light-color;
+	line-height: 1.4;
+	padding: 0 25%;
+	margin-top: 2rem;
 	box-sizing: border-box;
+
+	/deep/ a {
+		color: $theme-color;
+		text-decoration: none;
+		border-bottom: 1px solid $theme-color;
+	}
+	/deep/ a:hover {
+		color: #fc6423;
+		border-bottom: none;
+		border-bottom: 1px solid #fc6423;
+	}
+
+	/deep/ h1 {
+		font-size: 3rem;
+	}
+	/deep/ h2 {
+		font-size: 2.6rem;
+	}
+	/deep/ h3 {
+		font-size: 2.2rem;
+	}
 }
 
 @media screen and (max-width: 860px) {
 	.router-post-body {
+		font-size: 1.3rem;
 		padding: 0 4%;
-    }
-    .router-post-body /deep/ blockquote{
-        margin: 0;
-    }
+	}
+	.router-post-body /deep/ blockquote {
+		margin: 0;
+	}
 }
 </style>

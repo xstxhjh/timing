@@ -21,6 +21,14 @@ dirSync.map(item => {
 })
 process.env.VUE_APP_MD_FILES = JSON.stringify(mdArr)
 
+// markdown-it plugin
+var markdown = require('markdown-it')({
+    html: true,
+    breaks: true,
+    typographer: true,
+    linkify: true
+})
+
 // 移除 console 和注释
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
@@ -81,9 +89,7 @@ module.exports = {
             .end()
             .use('vue-markdown-loader')
             .loader('vue-markdown-loader/lib/markdown-compiler')
-            .options({
-                raw: true
-            })
+            .options({ raw: true, ...markdown })
 
         // svg
         config.module

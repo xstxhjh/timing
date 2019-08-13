@@ -48,13 +48,15 @@
 >
 > **设计导航** > > > http://hao.shejidaren.com/index.html
 >
+> **MFD设计导航** > > > http://mfchange.cn
+>
 > **腾讯设计导航** > > > http://hao.shejidaren.com/index.html
 >
-> **堆糖** > > > https://www.duitang.com/
+> **堆糖** > > > https://www.duitang.com
 >
 > **颜色盒** > > > https://www.colorbox.io
 >
 > **颜色搭配** > > > https://colorhunt.co/hot
 >
-> **HiPPTer** > > > http://www.hippter.com/
+> **HiPPTer** > > > http://www.hippter.com
 >
