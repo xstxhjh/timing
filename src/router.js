@@ -65,7 +65,7 @@ let constantRouterMap = [
 // }
 
 export default new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     base: '/',
     routes: constantRouterMap
 })

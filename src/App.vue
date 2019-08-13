@@ -13,6 +13,7 @@ export default {
 		let data = JSON.parse(process.env.VUE_APP_MD_FILES)
 		let arr = []
 		data.map(item => {
+			console.log(item)
 			let fileContent = item.fileContent
 			let title = fileContent.match(/\[title\]:#\((.*?)\)/)[1]
 			let date = fileContent.match(/\[date\]:#\((.*?)\)/)[1]
@@ -24,10 +25,10 @@ export default {
 				date,
 				categories,
 				description,
-				image
+				image,
+				routeName: item.routeName
 			})
 			this.$store.commit('setMarkdownAll', arr)
-			console.log(this.$store.state.markdownAll)
 		})
 	},
 	mounted() {},

@@ -10,7 +10,7 @@
 
     .box-center
       .nav-views
-        div(:class="['nav-views-item',currentRouteName=='home'?'nav-views-item-active':'']") Home
+        div(:class="['nav-views-item',currentRouteName=='home'?'nav-views-item-active':'']" @click="goToMain('home')") Home
         div(:class="['nav-views-item',currentRouteName=='archives'?'nav-views-item-active':'']") Archives
         div(:class="['nav-views-item',currentRouteName=='categories'?'nav-views-item-active':'']") Categories
         div(:class="['nav-views-item',currentRouteName=='about'?'nav-views-item-active':'']") About
@@ -44,6 +44,11 @@ export default {
 	created() {},
 	mounted() {},
 	methods: {
+		goToMain(routeName) {
+			this.$router.push({
+				name: routeName
+			})
+		},
 		navIconChange() {
 			// 点击左边菜单图标按钮
 			this.navIconOpen = !this.navIconOpen
@@ -127,6 +132,7 @@ export default {
 	.layout-content {
 		width: 100%;
 		flex: 1;
+		padding-bottom: 2rem;
 	}
 
 	.layout-end {
@@ -167,7 +173,9 @@ export default {
 	mix-blend-mode: exclusion;
 	border: 0 solid;
 	border-top: 0 solid;
-	border-bottom: 0.1rem solid #fff;
+	background: rgba(255, 255, 255, 0.7);
+	border-bottom-left-radius: 0.3rem;
+	border-bottom-right-radius: 0.3rem;
 }
 
 .nav-views-item {

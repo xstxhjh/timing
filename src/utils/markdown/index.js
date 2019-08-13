@@ -10,7 +10,7 @@ mdArr.map(item => {
     let fileName = item.split('/')[1]
     let pathName = item.split(/\/(\S*)\./)[1]
     mdRouteArr.push({
-        name: fileName,
+        name: pathName,
         path: pathName,
         component: () => import(`@/pages/${fileName}`)
     })
