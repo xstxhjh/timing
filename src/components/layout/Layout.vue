@@ -8,7 +8,7 @@
           span
           span
 
-    .box-center
+    .box-center(ref='boxHeight')
       .nav-views
         div(:class="['nav-views-item',currentRouteName=='home'?'nav-views-item-active':'']" @click="goToMain('home')") Home
         div(:class="['nav-views-item',currentRouteName=='archives'?'nav-views-item-active':'']") Archives
@@ -28,7 +28,8 @@ export default {
 	data() {
 		return {
 			navIconOpen: false,
-			currentRouteName: ''
+			currentRouteName: '',
+			clientHeight: 0
 		}
 	},
 	watch: {
@@ -42,8 +43,22 @@ export default {
 	filters: {},
 	computed: {},
 	created() {},
-	mounted() {},
+	mounted() {
+		window.addEventListener('scroll', this.handleScroll, true)
+		this.clientHeight = document.body.clientHeight
+	},
 	methods: {
+		handleScroll() {
+			let scrollHeight = this.$refs.boxHeight.scrollHeight
+			let scrollTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageXOffset
+
+			let percentage = this.clientHeight / scrollHeight / (scrollHeight / this.clientHeight)
+			this.$nextTick(() => {
+                console.log(this.clientHeight / scrollHeight)
+				console.log(scrollHeight / this.clientHeight)
+			})
+		},
+
 		goToMain(routeName) {
 			this.$router.push({
 				name: routeName
