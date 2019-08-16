@@ -13,7 +13,6 @@ export default {
 		let data = JSON.parse(process.env.VUE_APP_MD_FILES)
 		let arr = []
 		data.map(item => {
-			console.log(item)
 			let fileContent = item.fileContent
 			let title = fileContent.match(/\[title\]:#\((.*?)\)/)[1]
 			let date = fileContent.match(/\[date\]:#\((.*?)\)/)[1]
@@ -80,6 +79,7 @@ body,
 }
 
 ::selection {
+	// 选中复制时样式
 	background: #252a31;
 	color: #fff;
 }
