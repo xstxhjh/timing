@@ -26,6 +26,14 @@ let constantRouterMap = [
                     title: '首页'
                 },
                 component: () => import('@/views/home.vue')
+            },
+            {
+                path: 'about',
+                name: 'about',
+                meta: {
+                    title: '关于'
+                },
+                component: () => import('@/views/about.vue')
             }
         ]
     },

@@ -13,7 +13,7 @@
         div(:class="['nav-views-item',currentRouteName=='home'?'nav-views-item-active':'']" @click="goToMain('home')") Home
         div(:class="['nav-views-item',currentRouteName=='archives'?'nav-views-item-active':'']") Archives
         div(:class="['nav-views-item',currentRouteName=='categories'?'nav-views-item-active':'']") Categories
-        div(:class="['nav-views-item',currentRouteName=='about'?'nav-views-item-active':'']") About
+        div(:class="['nav-views-item',currentRouteName=='about'?'nav-views-item-active':'']" @click="goToMain('about')") About
       router-view.layout-content
       .layout-end(@mouseenter="trapezoidMouseenter" @mouseleave="trapezoidMouseleave")
         a.end-trapezoid(href="https://github.com/xstxhjh" target="_blank")
@@ -231,7 +231,7 @@ export default {
 	mix-blend-mode: exclusion;
 	border: 0 solid;
 	border-top: 0 solid;
-	background: rgba(255, 255, 255, 0.7);
+	background: rgba(255, 255, 255, 1);
 	border-bottom-left-radius: 0.3rem;
 	border-bottom-right-radius: 0.3rem;
 }
