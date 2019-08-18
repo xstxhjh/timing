@@ -1,7 +1,7 @@
 # timing
 
 ## description
-基于 vue 搭建的轻量级单页面博客
+基于 vue 搭建的轻量级SPA博客
 
 ## Project command
 ```
