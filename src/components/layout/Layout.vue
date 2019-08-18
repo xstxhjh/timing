@@ -6,11 +6,16 @@
           img.avatar(src='https://i.loli.net/2019/08/05/Lo9nyjTO5ZUN6im.jpg')
           .nickname Chirenmeng
           .sketch 一个属于前端的博客
-          a(href="https://github.com/xstxhjh").github
-            svg-icon(v-show="navIconOpen" icon-class="github" class="github-icon")
-            span github
+          a(target="_blank" href="https://github.com/xstxhjh").github
+            svg-icon(icon-class="github" class="github-icon")
+            span GitHub
           a(target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-by-link")
-            svg-icon(v-show="navIconOpen" icon-class="cc-by-nc-sa" class="cc-by-icon")
+            svg-icon(icon-class="cc-by-nc-sa" class="cc-by-icon")
+          .blogroll
+            svg-icon(icon-class="blogroll" class="blogroll-icon")
+            span 友情链接
+          a(target="_blank" href="https://github.com/30-seconds/30-seconds-of-code").blogroll-link 30-seconds-of-code
+          a(target="_blank" href="https://juejin.im/post/59097cd7a22b9d0065fb61d2").blogroll-link 手摸手，带你用vue撸后台
 
         div(:class="['nav-icon',navIconOpen?'open':'']" @click="navIconChange")
           span
@@ -105,13 +110,13 @@ export default {
     trapezoidMouseenter() {
       // 鼠标移入改变博客按钮样式
       TweenMax.to('.end-trapezoid', 0.3, {
-        width: '21rem',
+        width: '18rem',
         opacity: 0.5
       })
     },
     trapezoidMouseleave() {
       TweenMax.to('.end-trapezoid', 0.3, {
-        width: '20rem',
+        width: '17rem',
         opacity: 1
       })
     }
@@ -199,6 +204,33 @@ export default {
         cursor: pointer;
       }
     }
+    .blogroll {
+      color: #fff;
+      margin: 4rem 0 1rem;
+      font-size: 1.6rem;
+      letter-spacing: 0;
+      margin-right: 0.4rem;
+      .blogroll-icon {
+        margin-right: 0.4rem;
+      }
+    }
+    .blogroll-link {
+      font-size: 1.3rem;
+      color: #999;
+      text-decoration: none;
+      letter-spacing: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 0.1rem solid $theme-light-color;
+      cursor: pointer;
+      &:hover {
+        color: #f5f5f5;
+        border-bottom: 0.1rem solid #f5f5f5;
+      }
+    }
   }
 
   .avatar:hover {
@@ -259,16 +291,17 @@ export default {
 
 // 中间 底部博客按钮
 .end-trapezoid {
-  font-size: 2rem;
+  font-size: 1.7rem;
+  letter-spacing: 0.1rem;
   color: #fff;
-  width: 20rem;
+  width: 17rem;
   height: 0;
   padding-top: 1rem;
   display: flex;
   justify-content: center;
   border: 1.4rem solid transparent;
   border-top: 0 solid transparent;
-  border-bottom: 3.1rem solid $theme-color;
+  border-bottom: 2.8rem solid $theme-color;
   text-shadow: 0 0 0.3rem rgba(255, 255, 255, 0.5);
   text-decoration: none;
   user-select: none;

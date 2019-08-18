@@ -39,7 +39,8 @@ export default {
 html {
 	color: #333;
 	font-size: 62.5%;
-	font-family: 'Monaco', 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Monda', "PingFang SC", "Microsoft YaHei", sans-serif;
+	// font-family: 'Monaco', 'Avenir', Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
