@@ -19,7 +19,7 @@ export default {
                 迅捷开发：pug、scss、moment.js、pace.js、highlight.js、TweenMax.js。<br/>
                 项目优化：cdn、svg、md。<br/>`,
       Profile: `技术栈：Vue、小程序、PHP、Node.js、Mysql、Linux、Shell、photoshop、Hexo<br/>
-                
+                自我简述：网络安全技术专业，热忱于前端，有一定的产品设计能力。<br/>
                 联系方式：573363596@qq.com<br/>`
     }
   },
