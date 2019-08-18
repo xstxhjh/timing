@@ -1,5 +1,8 @@
 # timing
 
+## description
+基于 vue 搭建的轻量级单页面博客
+
 ## Project command
 ```
 yarn install
@@ -26,6 +29,3 @@ vue ui
 -  highlight.js 代码高亮
 -  引入了 Moment.js
 -  引入了 TweenMax 缓动库
-
-## description
-基于 vue 搭建的轻量级单页面博客

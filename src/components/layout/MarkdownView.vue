@@ -22,17 +22,6 @@ export default {
 	margin-top: 2rem;
 	box-sizing: border-box;
 
-	/deep/ a {
-		color: $theme-color;
-		text-decoration: none;
-		border-bottom: 1px solid $theme-color;
-	}
-	/deep/ a:hover {
-		color: #fc6423;
-		border-bottom: none;
-		border-bottom: 1px solid #fc6423;
-	}
-
 	/deep/ h1 {
 		font-size: 3rem;
 	}

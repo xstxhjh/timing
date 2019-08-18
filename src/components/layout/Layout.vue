@@ -4,7 +4,7 @@
       .box-left-content
         .box-left-info(v-show="navIconOpen")
           img.avatar(src='https://i.loli.net/2019/08/05/Lo9nyjTO5ZUN6im.jpg')
-          .nickname Chirenmeng
+          router-link(to="about").nickname Chirenmeng
           .sketch 一个属于前端的博客
           a(target="_blank" href="https://github.com/xstxhjh").github
             svg-icon(icon-class="github" class="github-icon")
@@ -48,7 +48,7 @@ export default {
   components: {},
   data() {
     return {
-      navIconOpen: false,
+      navIconOpen: true,
       currentRouteName: '',
       topValue: '0%'
     }
@@ -57,6 +57,23 @@ export default {
     $route: {
       handler(res) {
         this.currentRouteName = res.name
+      },
+      immediate: true
+    },
+    navIconOpen: {
+      handler(navIconOpen) {
+        if (!navIconOpen) {
+          TweenMax.to('.box-left', 0.4, {
+            width: '0'
+          })
+        } else {
+          TweenMax.to('.box-left', 0.2, {
+            width: '32rem'
+          })
+          TweenMax.to('.avatar', 0.2, {
+            opacity: 1
+          })
+        }
       },
       immediate: true
     }
@@ -78,7 +95,7 @@ export default {
         let scrollTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageXOffset
         this.$nextTick(() => {
           let topValue = Math.round((scrollTop / (scrollHeight - clientHeight)) * 100)
-          this.topValue = topValue > 100 ? 100 : topValue
+          this.topValue = topValue >= 100 ? 100 : topValue
         })
         this.handleScroll.debounce = true
         setTimeout(() => {
@@ -94,18 +111,6 @@ export default {
     navIconChange() {
       // 点击左边菜单图标按钮
       this.navIconOpen = !this.navIconOpen
-      if (!this.navIconOpen) {
-        TweenMax.to('.box-left', 0.4, {
-          width: '0'
-        })
-      } else {
-        TweenMax.to('.box-left', 0.2, {
-          width: '32rem'
-        })
-        TweenMax.to('.avatar', 0.2, {
-          opacity: 1
-        })
-      }
     },
     trapezoidMouseenter() {
       // 鼠标移入改变博客按钮样式
@@ -131,6 +136,7 @@ export default {
 }
 
 .box-left {
+  width: 32rem;
   background: $theme-dark-color;
   display: flex;
   align-items: center;
@@ -155,11 +161,16 @@ export default {
       box-shadow: 0 0 1rem rgba(0, 0, 0, 0.8);
       border: 0.2rem solid rgba(221, 221, 221, 0.3);
       transition: transform 1s ease;
-      opacity: 0;
+      opacity: 1;
     }
     .nickname {
       color: #f5f5f5;
+      cursor: pointer;
       margin: 2rem 0;
+      text-decoration: none;
+      &:hover {
+        color: #fc6423;
+      }
     }
     .sketch {
       margin-bottom: 3rem;
@@ -198,6 +209,9 @@ export default {
     }
     .cc-by-link {
       text-align: center;
+      &:hover {
+        border-bottom: .1rem solid rgba(0, 0, 0, 0);
+      }
       .cc-by-icon {
         width: 8rem;
         height: 1.5rem;

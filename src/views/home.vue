@@ -11,7 +11,6 @@
 </template>
 
 <script>
-//-   .button-gradient BACK
 export default {
   components: {},
   props: {},
@@ -37,7 +36,7 @@ export default {
   created() { },
   mounted() {
     this.postAll = this.$store.state.markdownAll
-    console.log(this.postAll)
+    // console.log(this.postAll)
     // this.$axios('https://easy-mock.com/mock/5c9ae664bbbd4054ae3c51c9/chirenmeng/test').then(res => {
     //   console.log(res)
     // })

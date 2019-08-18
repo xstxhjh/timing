@@ -68,8 +68,8 @@ module.exports = {
 
     config.optimization.minimize(true) // 压缩代码
     config.optimization.splitChunks({
-        // 分割代码
-        chunks: 'all'
+      // 分割代码
+      chunks: 'all'
     })
 
     // 引用 pug
@@ -113,7 +113,7 @@ module.exports = {
       sass: {
         // 向全局sass样式传入共享的全局变量
         data: `@import "@/assets/variable.scss";
-                       @import "@/assets/global.scss";`
+               @import "@/assets/global.scss";`
       }
     }
   }
