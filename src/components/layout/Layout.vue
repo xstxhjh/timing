@@ -306,7 +306,7 @@ export default {
 
 // 中间 底部博客按钮
 .end-trapezoid {
-  font-size: 1.7rem;
+  font-size: 1.6rem;
   letter-spacing: 0.1rem;
   color: #fff;
   width: 17rem;
