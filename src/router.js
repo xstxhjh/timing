@@ -34,6 +34,14 @@ let constantRouterMap = [
                     title: '关于'
                 },
                 component: () => import('@/views/about.vue')
+            },
+            {
+                path: 'archives',
+                name: 'archives',
+                meta: {
+                    title: '归档'
+                },
+                component: () => import('@/views/archives.vue')
             }
         ]
     },
