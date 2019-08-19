@@ -1,29 +1,45 @@
 <template lang="pug">
     .archives-box
         .time-step
-            .step-item  03-31
-            .step-item  03-31
-            .step-item  03-31
-            .step-item  03-31
+            .step-item(v-for="item in postAll" @click="goToPost(item.routeName)")
+                .date-text {{item.dateMonthday}}
+                .post-title {{item.title}}
 
 </template>
 
 <script>
 export default {
 	data() {
-		return {}
+		return {
+			postAll: []
+		}
 	},
 	components: {},
 	computed: {},
-	mounted() {},
-	methods: {}
+	mounted() {
+		this.postAll = this.$store.state.markdownAll
+		this.postAll.map(item => {
+			item.dateYear = item.date.substring(0, 4)
+			item.dateMonthday = item.date.substring(5, 10)
+			return item
+		})
+		console.log(this.postAll)
+	},
+	methods: {
+		goToPost(routeName) {
+			this.$router.push({
+				name: routeName
+			})
+		}
+	}
 }
 </script>
 
 <style lang='scss' scoped>
 .archives-box {
+	font-family: 'Roboto Slab', 'Monda', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 	font-size: 1.6rem;
-	width: 60% !important;
+	width: 50% !important;
 	padding-top: 2rem;
 }
 
@@ -36,15 +52,25 @@ export default {
 .time-step {
 	display: flex;
 	flex-direction: column;
+	margin-left: 6rem;
+	margin-top: 4%;
 }
 
 .step-item {
+	color: #666;
 	font-size: 1.2rem;
-	height: 7rem;
 	position: relative;
-	padding-left: 1rem;
+	padding: .4rem 1.4rem;
+	margin: 3rem 0;
 	display: flex;
 	align-items: center;
+	user-select: none;
+	cursor: pointer;
+
+	.post-title {
+		font-size: 1.6rem;
+		margin-left: 1rem;
+	}
 }
 
 .step-item::before {
@@ -59,6 +85,12 @@ export default {
 	top: calc(50% - 1rem);
 	left: -0.6rem;
 	transform: translate(-50%, 50%);
+}
+
+.step-item:hover {
+	&::before {
+		background: $theme-dark-color;
+	}
 }
 
 .step-item:not(:last-child):after {
