@@ -4,6 +4,7 @@
             .step-item(v-for="item in postAll" @click="goToPost(item.routeName)")
                 .date-text {{item.dateMonthday}}
                 .post-title {{item.title}}
+                .date-title {{item.dateTitle}}
 
 </template>
 
@@ -11,22 +12,32 @@
 export default {
 	data() {
 		return {
-			postAll: []
+			postAll: [],
+			yearStep: []
 		}
 	},
 	components: {},
 	computed: {},
 	mounted() {
 		this.postAll = this.$store.state.markdownAll
-		this.postAll.map(item => {
+		this.postAll.map((item, index) => {
+			if (item.dateYear) return
 			item.dateYear = item.date.substring(0, 4)
 			item.dateMonthday = item.date.substring(5, 10)
+
+			if (!this.yearStep.includes(item.dateYear)) {
+				this.yearStep.push(item.dateYear)
+				this.postAll.push({
+					dateTitle: item.dateYear,
+					dateYear: item.dateYear
+				})
+			}
 			return item
 		})
-		console.log(this.postAll)
 	},
 	methods: {
 		goToPost(routeName) {
+            if(!routeName) return
 			this.$router.push({
 				name: routeName
 			})
@@ -60,8 +71,7 @@ export default {
 	color: #666;
 	font-size: 1.2rem;
 	position: relative;
-	padding: .4rem 1.4rem;
-	margin: 3rem 0;
+	padding: 3.4rem 1.4rem;
 	display: flex;
 	align-items: center;
 	user-select: none;
@@ -70,7 +80,13 @@ export default {
 	.post-title {
 		font-size: 1.6rem;
 		margin-left: 1rem;
-	}
+    }
+    
+    .date-title{
+        font-size: 3rem;
+        font-weight: bold;
+        color: $theme-light-color;
+    }
 }
 
 .step-item::before {
@@ -98,7 +114,7 @@ export default {
 	height: 100%;
 	width: 0.4rem;
 	position: absolute;
-	top: 0;
+	top: .5rem;
 	left: 0;
 	transform: translate(-100%, 50%);
 	border-left: 0.4rem solid #f5f5f5;
