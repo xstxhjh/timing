@@ -18,26 +18,35 @@ export default {
 	},
 	components: {},
 	computed: {},
-	mounted() {
-		this.postAll = this.$store.state.markdownAll
-		this.postAll.map((item, index) => {
-			if (item.dateYear) return
-			item.dateYear = item.date.substring(0, 4)
-			item.dateMonthday = item.date.substring(5, 10)
+	watch: {
+		$store: {
+			handler(res) {
+				let postAll = [...res.state.markdownAll]
+				postAll.map((item, index) => {
+					item.dateYear = item.date.substring(0, 4)
+					item.dateMonthday = item.date.substring(5, 10)
 
-			if (!this.yearStep.includes(item.dateYear)) {
-				this.yearStep.push(item.dateYear)
-				this.postAll.push({
-					dateTitle: item.dateYear,
-					dateYear: item.dateYear
+					if (!this.yearStep.includes(item.dateYear)) {
+						this.yearStep.push(item.dateYear)
+						this.postAll.push(item)
+						this.postAll.push({
+							dateTitle: item.dateYear,
+							dateYear: item.dateYear
+						})
+					} else {
+						this.postAll.push(item)
+					}
+					return item
 				})
-			}
-			return item
-		})
+				console.log(this.postAll)
+			},
+			immediate: true
+		}
 	},
+	mounted() {},
 	methods: {
 		goToPost(routeName) {
-            if(!routeName) return
+			if (!routeName) return
 			this.$router.push({
 				name: routeName
 			})
@@ -71,7 +80,7 @@ export default {
 	color: #666;
 	font-size: 1.2rem;
 	position: relative;
-	padding: 3.4rem 1.4rem;
+	padding: 2.4rem 1.4rem;
 	display: flex;
 	align-items: center;
 	user-select: none;
@@ -80,13 +89,13 @@ export default {
 	.post-title {
 		font-size: 1.6rem;
 		margin-left: 1rem;
-    }
-    
-    .date-title{
-        font-size: 3rem;
-        font-weight: bold;
-        color: $theme-light-color;
-    }
+	}
+
+	.date-title {
+		font-size: 3rem;
+		font-weight: bold;
+		color: $theme-light-color;
+	}
 }
 
 .step-item::before {
@@ -114,7 +123,7 @@ export default {
 	height: 100%;
 	width: 0.4rem;
 	position: absolute;
-	top: .5rem;
+	top: 0.5rem;
 	left: 0;
 	transform: translate(-100%, 50%);
 	border-left: 0.4rem solid #f5f5f5;

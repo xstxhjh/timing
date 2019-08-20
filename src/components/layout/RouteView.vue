@@ -1,5 +1,6 @@
 <template lang="pug">
-    router-view
+    keep-alive
+        router-view
 </template>
 <script>
     export default {

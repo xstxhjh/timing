@@ -1,13 +1,24 @@
 <template lang="pug">
     router-view.router-post-body
 </template>
+
 <script>
+hljs.highlightCode = function() {
+	//自定义highlightCode方法，将只执行一次的逻辑去掉
+	let blocks = document.querySelectorAll('pre code')
+	;[].forEach.call(blocks, hljs.highlightBlock)
+}
+
 export default {
 	name: 'MarkdownView',
 	data() {
 		return {}
 	},
-	mounted() {},
+	mounted() {
+		// highlight.js 代码高亮
+		hljs.highlightCode()
+	},
+	activated() {},
 	updated() {}
 }
 </script>

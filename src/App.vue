@@ -5,94 +5,95 @@
 
 <script>
 export default {
-  name: 'app',
-  data() {
-    return {}
-  },
-  created() {
-    let data = JSON.parse(process.env.VUE_APP_MD_FILES)
-    let arr = []
-    data.map(item => {
-      let fileContent = item.fileContent
-      let title = fileContent.match(/\[title\]:#\((.*?)\)/)[1]
-      let date = fileContent.match(/\[date\]:#\((.*?)\)/)[1]
-      let categories = fileContent.match(/\[categories\]:#\((.*?)\)/)[1]
-      let description = fileContent.match(/\[description\]:#\((.*?)\)/)[1]
-      let image = fileContent.match(/\[image\]:#\((.*?)\)/)[1]
-      arr.push({
-        title,
-        date,
-        categories,
-        description,
-        image,
-        routeName: item.routeName
-      })
-      this.$store.commit('setMarkdownAll', arr)
-    })
-  },
-  mounted() { },
-  methods: {}
+	name: 'app',
+	data() {
+		return {}
+	},
+	created() {
+		let data = JSON.parse(process.env.VUE_APP_MD_FILES)
+		let arr = []
+		data.map(item => {
+			let fileContent = item.fileContent
+			let title = fileContent.match(/\[title\]:#\((.*?)\)/)[1]
+			let date = fileContent.match(/\[date\]:#\((.*?)\)/)[1]
+			let categories = fileContent.match(/\[categories\]:#\((.*?)\)/)[1]
+			let description = fileContent.match(/\[description\]:#\((.*?)\)/)[1]
+			let image = fileContent.match(/\[image\]:#\((.*?)\)/)[1]
+			arr.push({
+				title,
+				date,
+				categories,
+				description,
+				image,
+				timeDate: item.timeDate,
+				routeName: item.routeName
+			})
+			this.$store.commit('setMarkdownAll', arr)
+        })
+	},
+	mounted() {},
+	methods: {}
 }
 </script>
 
 <style lang="scss">
 html {
-  color: #333;
-  font-size: 62.5%;
-  font-family: "Monda", "PingFang SC", "Microsoft YaHei", sans-serif;
-  // font-family: 'Monaco', 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  overflow-x: hidden;
+	color: #333;
+	font-size: 62.5%;
+	font-family: 'Monda', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+	// font-family: 'Monaco', 'Avenir', Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	overflow-x: hidden;
 }
 
 html,
 body,
 #app {
-  height: 100%;
+	height: 100%;
 }
 
 @media (max-width: 600px) {
-  #app {
-    font-size: 1.5rem;
-  }
+	#app {
+		font-size: 1.5rem;
+	}
 }
 @media (min-width: 600px) {
-  #app {
-    font-size: 1.7rem;
-  }
+	#app {
+		font-size: 1.7rem;
+	}
 }
 @media (min-width: 768px) {
-  #app {
-    font-size: 1.9rem;
-  }
+	#app {
+		font-size: 1.9rem;
+	}
 }
 @media (min-width: 992px) {
-  #app {
-    font-size: 2.1rem;
-  }
+	#app {
+		font-size: 2.1rem;
+	}
 }
 @media (min-width: 1200px) {
-  #app {
-    font-size: 2.3rem;
-  }
+	#app {
+		font-size: 2.3rem;
+	}
 }
 
 ::selection {
-  // 选中复制时样式
-  background: #252a31;
-  color: #fff;
+	// 选中复制时样式
+	background: #252a31;
+	color: #fff;
 }
 
 a {
-  color: $theme-color;
-  text-decoration: none;
-  border-bottom: 1px solid $theme-color;
+	color: $theme-color;
+	text-decoration: none;
+	border-bottom: 1px solid $theme-color;
 }
 a:hover {
-  color: #fc6423;
-  border-bottom: none;
-  border-bottom: 1px solid #fc6423;
+	color: #fc6423;
+	border-bottom: none;
+	border-bottom: 1px solid #fc6423;
 }
 </style>

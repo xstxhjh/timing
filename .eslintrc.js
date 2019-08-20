@@ -15,6 +15,7 @@ module.exports = {
     },
     globals: {
         Pace: true,
-        TweenMax: true
+        TweenMax: true,
+        hljs: true
     }
 }
