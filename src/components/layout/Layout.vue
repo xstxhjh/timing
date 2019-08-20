@@ -84,6 +84,9 @@ export default {
 	mounted() {
 		window.addEventListener('scroll', this.handleScroll, true)
 	},
+	beforeDestroy() {
+		window.removeEventListener('scroll', this.handleScroll, false)
+	},
 	methods: {
 		backTop() {
 			TweenMax.to(window, 0.4, { scrollTo: 0 })
@@ -347,6 +350,7 @@ export default {
 	background: rgba(255, 255, 255, 1);
 	border-bottom-left-radius: 0.3rem;
 	border-bottom-right-radius: 0.3rem;
+	z-index: 99;
 }
 
 .nav-views-item {
