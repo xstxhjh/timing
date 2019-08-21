@@ -1,5 +1,6 @@
 <template lang="pug">
     .archives-box
+        .archives-box-title 嗯..! 目前共计 {{$store.state.markdownAll.length}} 篇日志。继续努力!
         .time-step
             .step-item(v-for="item in postAll" @click="goToPost(item.routeName)")
                 .date-text {{item.dateMonthday}}
@@ -38,7 +39,6 @@ export default {
 					}
 					return item
 				})
-				console.log(this.postAll)
 			},
 			immediate: true
 		}
@@ -57,7 +57,6 @@ export default {
 
 <style lang='scss' scoped>
 .archives-box {
-	font-family: 'Roboto Slab', 'Monda', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 	font-size: 1.6rem;
 	width: 50% !important;
 	padding-top: 2rem;
@@ -67,6 +66,13 @@ export default {
 	.archives-box {
 		width: 96% !important;
 	}
+}
+
+.archives-box-title {
+	font-size: 2rem;
+	line-height: 2;
+    text-align: center;
+    margin-top: 3rem;
 }
 
 .time-step {

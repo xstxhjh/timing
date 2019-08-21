@@ -26,7 +26,7 @@
       .nav-views
         div(:class="['nav-views-item',currentRouteName=='home'?'nav-views-item-active':'']" @click="goToMain('home')") Home
         div(:class="['nav-views-item',currentRouteName=='archives'?'nav-views-item-active':'']" @click="goToMain('archives')") Archives
-        div(:class="['nav-views-item',currentRouteName=='categories'?'nav-views-item-active':'']") Categories
+        div(:class="['nav-views-item',currentRouteName=='categories'?'nav-views-item-active':'']" @click="goToMain('categories')") Categories
         div(:class="['nav-views-item',currentRouteName=='about'?'nav-views-item-active':'']" @click="goToMain('about')") About
       router-view.layout-content
       .layout-end(@mouseenter="trapezoidMouseenter" @mouseleave="trapezoidMouseleave")
