@@ -1,10 +1,10 @@
 <template lang="pug">
     .archives-box
-        .archives-box-title 嗯..! 目前共计 {{$store.state.markdownAll.length}} 篇日志。继续努力!
+        .archives-box-title 嗯..！已经记录 {{$store.state.markdownAll.length}} 篇日志。继续努力！
         .time-step
-            .step-item(v-for="item in postAll" @click="goToPost(item.routeName)")
+            .step-item(v-for="item in postAll")
                 .date-text {{item.dateMonthday}}
-                .post-title {{item.title}}
+                .post-title(@click="goToPost(item.routeName)") {{item.title}}
                 .date-title {{item.dateTitle}}
 
 </template>
@@ -71,8 +71,8 @@ export default {
 .archives-box-title {
 	font-size: 2rem;
 	line-height: 2;
-    text-align: center;
-    margin-top: 3rem;
+	text-align: center;
+	margin-top: 3rem;
 }
 
 .time-step {
@@ -89,12 +89,12 @@ export default {
 	padding: 2.4rem 1.4rem;
 	display: flex;
 	align-items: center;
-	user-select: none;
-	cursor: pointer;
 
 	.post-title {
 		font-size: 1.6rem;
 		margin-left: 1rem;
+		user-select: none;
+		cursor: pointer;
 	}
 
 	.date-title {

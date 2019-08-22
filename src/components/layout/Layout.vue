@@ -98,8 +98,8 @@ export default {
 				let scrollTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageXOffset
 				this.$nextTick(() => {
 					let topValue = Math.round((scrollTop / (scrollHeight - clientHeight)) * 100)
-					if (scrollTop == 0) topValue = 0
 					if (scrollTop + clientHeight == scrollHeight) topValue = 100
+					if (scrollTop == 0) topValue = 0
 					this.topValue = topValue > 100 ? 100 : topValue
 				})
 				this.handleScroll.debounce = true
@@ -393,7 +393,7 @@ export default {
 }
 
 .nav-views-item:hover ~ .nav-views-item::before {
-	left: 0;
+    left: 0;
 }
 
 .nav-views-item:active {

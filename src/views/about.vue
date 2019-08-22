@@ -14,7 +14,7 @@ export default {
     return {
       project: `　　这个博客项目是我于2019年7月28日，心血来潮搭建起来的轻量级SPA博客。
                 之前写博客用的是Hexo，后来感觉项目太厚重了，于是乎摒弃了它。<br /><br />
-                💨 <a target="_blank" href="https://github.com/xstxhjh/timing" class="cc-by-link">此开源项目代码</a> <br/>
+                🇨🇳 <a target="_blank" href="https://github.com/xstxhjh/timing" class="cc-by-link">此开源项目代码</a> <br/>
                 主体框架：Vue-cli3、Vue-router、Vuex、axios。<br />
                 迅捷开发：pug、scss、moment.js、pace.js、highlight.js、TweenMax.js。<br/>
                 项目优化：cdn、svg、md。<br/>`,
