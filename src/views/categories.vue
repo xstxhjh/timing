@@ -2,8 +2,8 @@
     .categories-box
         .categories-box-title 日志自动划分为 {{categories.length}} 种类别～！
         .category-list
-            .category-list-item(v-for="item in categories" @click="getPostList(item)" :class="activeTitle==item.title?'active-title':''")
-                span {{item.title}}
+            .category-list-item(v-for="item in categories" :class="activeTitle==item.title?'active-title':''")
+                span(@click="getPostList(item)") {{item.title}}
                 span ┃ {{item.children.length}}
         .post-list
             .post-list-item(v-for="item in postList")
@@ -117,7 +117,6 @@ export default {
 
 	&:hover::after {
 		border: 0.1rem solid $theme-light-color;
-		background-color: $theme-light-color;
 	}
 
 	> span:first-child {

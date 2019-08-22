@@ -2,7 +2,7 @@
     .archives-box
         .archives-box-title 嗯..！已经记录 {{$store.state.markdownAll.length}} 篇日志。继续努力！
         .time-step
-            .step-item(v-for="item in postAll")
+            .step-item(v-for="item in postAll" :dateTitle="Boolean(item.dateTitle)")
                 .date-text {{item.dateMonthday}}
                 .post-title(@click="goToPost(item.routeName)") {{item.title}}
                 .date-title {{item.dateTitle}}
@@ -59,7 +59,7 @@ export default {
 .archives-box {
 	font-size: 1.6rem;
 	width: 50% !important;
-	padding-top: 2rem;
+    padding-top: 2rem;
 }
 
 @media screen and (max-width: 860px) {
@@ -79,7 +79,8 @@ export default {
 	display: flex;
 	flex-direction: column;
 	margin-left: 6rem;
-	margin-top: 4%;
+    margin-top: 4%;
+    padding-right: 2rem;
 }
 
 .step-item {
@@ -88,8 +89,12 @@ export default {
 	position: relative;
 	padding: 2.4rem 1.4rem;
 	display: flex;
-	align-items: center;
-
+    align-items: center;
+    
+	&[dateTitle='true']:not(:last-child) {
+		border-bottom: 1px dashed #ccc;
+    }
+    
 	.post-title {
 		font-size: 1.6rem;
 		margin-left: 1rem;
@@ -100,7 +105,7 @@ export default {
 	.date-title {
 		font-size: 3rem;
 		font-weight: bold;
-		color: $theme-light-color;
+        color: $theme-light-color;
 	}
 }
 
