@@ -66,15 +66,15 @@ let constantRouterMap = [
                 children: mdRouteArr
             }
         ]
+    },
+    {
+        path: '*',
+        name: '/errors',
+        meta: {
+            title: 'errors'
+        },
+        component: () => import('@/views/errors')
     }
-    // {
-    //   path: '*',
-    //   name: '/errors',
-    //   meta: {
-    //     title: 'errors'
-    //   },
-    //   component: () => import('@/views/errors')
-    // }
 ]
 
 // {
