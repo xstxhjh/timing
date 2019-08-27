@@ -99,6 +99,10 @@ export default {
     border-bottom: 1px dashed #ccc;
   }
 
+  .date-text {
+    white-space: nowrap;
+  }
+
   .post-title {
     font-size: 1.6rem;
     margin-left: 1rem;
