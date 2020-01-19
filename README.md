@@ -9,9 +9,9 @@
 ```
 yarn install
 
-yarn run serve
+yarn serve
 
-yarn run build
+yarn build
 
 vue ui
 ```
