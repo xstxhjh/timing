@@ -80,21 +80,4 @@ body,
 		font-size: 2.3rem;
 	}
 }
-
-::selection {
-	// 选中复制时样式
-	background: #252a31;
-	color: #fff;
-}
-
-a {
-	color: $theme-color;
-	text-decoration: none;
-	border-bottom: 1px solid $theme-color;
-}
-a:hover {
-	color: #fc6423;
-	border-bottom: none;
-	border-bottom: 1px solid #fc6423;
-}
 </style>
