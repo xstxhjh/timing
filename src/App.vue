@@ -26,7 +26,8 @@ export default {
 				description,
 				image,
 				timeDate: item.timeDate,
-				routeName: item.routeName
+                routeName: item.routeName,
+                wordCount: item.wordCount
 			})
 			this.$store.commit('setMarkdownAll', arr)
         })

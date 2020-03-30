@@ -27,7 +27,8 @@ dirSync.map(item => {
     fileName: item,
     routeName: item.match(/(\S*)\./)[1],
     fileContent: str,
-    timeDate: timeDate
+    timeDate: timeDate,
+    wordCount: str.length
   })
 })
 mdArr.sort(compare('timeDate'))

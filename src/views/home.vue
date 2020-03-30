@@ -3,7 +3,7 @@
 	.posts-expand(v-for="(item,index) in postAll" :key="index")
 		.post-header
 			.post-header-title(@click="goToPost(item.routeName)") {{item.title}}
-			.post-header-meta(v-html="'发表于 '+item.date")
+			.post-header-meta(v-html="`发表于 ${item.date} | 总计 ${item.wordCount} 个字`")
 		.post-body
 			img.post-body-image(:src="item.image")
 			.post-body-content(v-html="item.description")
