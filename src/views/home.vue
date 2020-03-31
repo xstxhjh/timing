@@ -17,9 +17,9 @@
             @click="pageCurrentChange(item)") {{item}}
 
     .right-anchor
-        .right-anchor-ink
-        .right-anchor-link(v-for="(item,index) in anchorActived" :key="index")
-            a(@click="anchorTo(item.timeDate)" :class="{'right-anchor-link-actived':(scrollTopId == item.timeDate)}") {{item.title}}
+        .right-anchor-ink 
+        .right-anchor-link(v-for="item in anchorActived" :key="index" :ref="'anchor'+item.timeDate"  :class="{'right-anchor-link-actived':(scrollTopId == item.timeDate)}")
+            a(@click="anchorTo(item.timeDate)") {{item.title}}
 </template>
 
 <script>
@@ -84,7 +84,7 @@ export default {
         },
         anchorTo(timeDate) {
             let ref = this.$refs[timeDate][0]
-            TweenMax.to(window, 0, { scrollTo: ref.offsetTop })
+            TweenMax.to(window, 0.2, { scrollTo: ref.offsetTop })
         },
         getRect(ele) {
             let inHeight = window.innerHeight
@@ -93,24 +93,9 @@ export default {
             rect.isVisible = rect.top - inHeight < 0  // 是否在可视区域
             rect.isBottom = rect.bottom - inHeight <= 0
             return rect
-        },
-        handleScroll() {
-            let ref = this.$refs['container']
-            if (!ref) return
-            let children = [...ref.children]
-            children.map(item => {
-                let rect = this.getRect(item)
-                if (item.className == 'posts-expand' && rect.isBottom) {
-                    this.scrollTopId = item.id
-                }
-            })
         }
     },
-    beforeDestroy() {
-        window.removeEventListener('scroll', this.handleScroll, false)
-    },
     mounted() {
-        window.addEventListener('scroll', this.handleScroll, true)
         // function timeout(ms) {
         //     return new Promise((resolve, reject) => {
         //         setTimeout(resolve, ms, 'finish')
@@ -281,7 +266,9 @@ export default {
     }
 
     .right-anchor-link-actived {
-        color: $theme-link-color !important;
+        a {
+            color: $theme-link-color !important;
+        }
     }
 
     .right-anchor-ink {
