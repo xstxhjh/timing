@@ -10,7 +10,10 @@
             .post-body-button(@click="goToPost(item.routeName)") 阅读全文 »
             
     .end-pagination
-        .end-pagination-item 1
+        .end-pagination-item(
+            :class="{'pagination-item-actived': item == pageCurrent}"
+            v-for="item in Math.ceil(postLength/pageSize)"
+            @click="pageCurrentChange(item)") {{item}}
 </template>
 
 <script>
@@ -20,12 +23,22 @@ export default {
     data() {
         return {
             navIconOpen: false,
-            postAll: []
+            pageSize: 5,
+            pageCurrent: 1,
+            postLength: 0
         }
     },
     watch: {},
     filters: {},
-    computed: {},
+    computed: {
+        postAll() {
+            let arr = [...this.$store.state.markdownAll]
+            let start = (this.pageCurrent - 1) * this.pageSize
+            let end = this.pageCurrent * this.pageSize
+            this.getPostLength(arr.length)
+            return arr.slice(start, end)
+        }
+    },
     methods: {
         navIconChange() {
             this.navIconOpen = !this.navIconOpen
@@ -34,13 +47,18 @@ export default {
             this.$router.push({
                 name: routeName
             })
+        },
+        getPostLength(length) {
+            this.postLength = length
+        },
+        pageCurrentChange(value) {
+            this.pageCurrent = value
+            this.$nextTick(() => {
+                TweenMax.to(window, 0, { scrollTo: document.body.scrollHeight })
+            })
         }
     },
-    created() { },
     mounted() {
-        this.postAll = this.$store.state.markdownAll
-        console.log(this.postAll)
-
 
         // function timeout(ms) {
         //     return new Promise((resolve, reject) => {
@@ -182,15 +200,22 @@ export default {
         background-color: #fff;
         border: 1px solid #d9d9d9;
         border-radius: 4px;
+        margin: 0 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        user-select: none;
         cursor: pointer;
 
         &:hover {
             font-weight: bold;
             border: 1px solid $theme-color;
         }
+    }
+
+    .pagination-item-actived {
+        font-weight: bold;
+        border: 1px solid $theme-color;
     }
 }
 </style>
