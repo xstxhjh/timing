@@ -41,9 +41,9 @@ a {
 	border-bottom: 1px solid $theme-color;
 }
 a:hover {
-	color: #fc6423;
+	color: $theme-link-color;
 	border-bottom: none;
-	border-bottom: 1px solid #fc6423;
+	border-bottom: 1px solid $theme-link-color;
 }
 
 ::-webkit-scrollbar {

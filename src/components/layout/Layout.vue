@@ -246,15 +246,10 @@ export default {
     }
 }
 
-@media screen and (max-width: 860px) {
-    .box-left {
-        display: none;
-    }
-}
-
 .box-center {
     width: 100%;
     min-height: 100%;
+    padding-right: 8%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -269,6 +264,15 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+}
+
+@media screen and (max-width: 860px) {
+    .box-left {
+        display: none;
+    }
+    .box-center {
+        padding-right: 0;
     }
 }
 

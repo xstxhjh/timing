@@ -1,6 +1,6 @@
 <template lang="pug">
-.container
-    .posts-expand(v-for="(item,index) in postAll" :key="index")
+.container(ref="container")
+    .posts-expand(v-for="(item,index) in postAll" :key="index" :id="item.timeDate" :ref="item.timeDate")
         .post-header
             .post-header-title(@click="goToPost(item.routeName)") {{item.title}}
             .post-header-meta(v-html="`发表于 ${item.date} | 总计 ${item.wordCount} 个字`")
@@ -13,7 +13,13 @@
         .end-pagination-item(
             :class="{'pagination-item-actived': item == pageCurrent}"
             v-for="item in Math.ceil(postLength/pageSize)"
+            :key="item"
             @click="pageCurrentChange(item)") {{item}}
+
+    .right-anchor
+        .right-anchor-ink
+        .right-anchor-link(v-for="(item,index) in anchorActived" :key="index")
+            a(@click="anchorTo(item.timeDate)" :class="{'right-anchor-link-actived':(scrollTopId == item.timeDate)}") {{item.title}}
 </template>
 
 <script>
@@ -25,10 +31,29 @@ export default {
             navIconOpen: false,
             pageSize: 5,
             pageCurrent: 1,
-            postLength: 0
+            postLength: 0,
+            anchorActived: [],
+            scrollTopId: ''
         }
     },
-    watch: {},
+    watch: {
+        'postAll': {
+            immediate: true,
+            handler(newVal, oldVal) {
+                this.$nextTick(() => {
+                    let heightArr = []
+                    let arr = [...newVal]
+                    arr.map((item, index) => {
+                        heightArr.push({
+                            title: item.title,
+                            timeDate: item.timeDate,
+                        })
+                    })
+                    this.anchorActived = heightArr
+                })
+            }
+        }
+    },
     filters: {},
     computed: {
         postAll() {
@@ -37,7 +62,7 @@ export default {
             let end = this.pageCurrent * this.pageSize
             this.getPostLength(arr.length)
             return arr.slice(start, end)
-        }
+        },
     },
     methods: {
         navIconChange() {
@@ -56,10 +81,36 @@ export default {
             this.$nextTick(() => {
                 TweenMax.to(window, 0, { scrollTo: document.body.scrollHeight })
             })
+        },
+        anchorTo(timeDate) {
+            let ref = this.$refs[timeDate][0]
+            TweenMax.to(window, 0, { scrollTo: ref.offsetTop })
+        },
+        getRect(ele) {
+            let inHeight = window.innerHeight
+            let rect = ele.getBoundingClientRect()
+
+            rect.isVisible = rect.top - inHeight < 0  // 是否在可视区域
+            rect.isBottom = rect.bottom - inHeight <= 0
+            return rect
+        },
+        handleScroll() {
+            let ref = this.$refs['container']
+            if (!ref) return
+            let children = [...ref.children]
+            children.map(item => {
+                let rect = this.getRect(item)
+                if (item.className == 'posts-expand' && rect.isBottom) {
+                    this.scrollTopId = item.id
+                }
+            })
         }
     },
+    beforeDestroy() {
+        window.removeEventListener('scroll', this.handleScroll, false)
+    },
     mounted() {
-
+        window.addEventListener('scroll', this.handleScroll, true)
         // function timeout(ms) {
         //     return new Promise((resolve, reject) => {
         //         setTimeout(resolve, ms, 'finish')
@@ -96,12 +147,6 @@ export default {
 .posts-expand {
     width: 60%;
     padding-top: 4rem;
-}
-
-@media screen and (max-width: 860px) {
-    .posts-expand {
-        width: 96%;
-    }
 }
 
 .post-header {
@@ -216,6 +261,55 @@ export default {
     .pagination-item-actived {
         font-weight: bold;
         border: 1px solid $theme-color;
+    }
+}
+
+.right-anchor {
+    font-size: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    right: 0;
+    text-align: left;
+
+    .right-anchor-link {
+        padding: 0.7rem 1rem 0.7rem 1.6rem;
+        a {
+            border: none;
+            cursor: pointer;
+        }
+    }
+
+    .right-anchor-link-actived {
+        color: $theme-link-color !important;
+    }
+
+    .right-anchor-ink {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        &::before {
+            content: " ";
+            position: relative;
+            display: block;
+            width: 2px;
+            height: 100%;
+            margin: 0 auto;
+            background-color: #e8e8e8;
+        }
+    }
+}
+
+@media screen and (max-width: 860px) {
+    .posts-expand {
+        width: 96%;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .right-anchor {
+        display: none;
     }
 }
 </style>
