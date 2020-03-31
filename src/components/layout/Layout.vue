@@ -49,7 +49,7 @@ export default {
         return {
             navIconOpen: true,
             currentRouteName: '',
-            topValue: '0%'
+            topValue: '0'
         }
     },
     watch: {

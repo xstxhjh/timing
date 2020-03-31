@@ -18,9 +18,13 @@
 
     .right-anchor
         .right-anchor-ink 
-        .right-anchor-link(v-for="item in anchorActived" :key="index" :ref="'anchor'+item.timeDate"  :class="{'right-anchor-link-actived':(scrollTopId == item.timeDate)}")
+        .right-anchor-link(
+            v-for="(item, index) in anchorActived"
+            :key="index" :ref="'anchor'+item.timeDate"
+            )
             a(@click="anchorTo(item.timeDate)") {{item.title}}
 </template>
+            // :class="{'right-anchor-link-actived': ((index-1) * pageSize < scrollTop) && (scrollTop <= index * pageSize)}"
 
 <script>
 export default {
@@ -33,7 +37,7 @@ export default {
             pageCurrent: 1,
             postLength: 0,
             anchorActived: [],
-            scrollTopId: ''
+            scrollTop: ''
         }
     },
     watch: {
@@ -52,6 +56,9 @@ export default {
                     this.anchorActived = heightArr
                 })
             }
+        },
+        '$parent.topValue'(topValue) {
+            // this.scrollTop = topValue / this.pageSize
         }
     },
     filters: {},
@@ -62,7 +69,7 @@ export default {
             let end = this.pageCurrent * this.pageSize
             this.getPostLength(arr.length)
             return arr.slice(start, end)
-        },
+        }
     },
     methods: {
         navIconChange() {
@@ -93,7 +100,7 @@ export default {
             rect.isVisible = rect.top - inHeight < 0  // 是否在可视区域
             rect.isBottom = rect.bottom - inHeight <= 0
             return rect
-        }
+        },
     },
     mounted() {
         // function timeout(ms) {
