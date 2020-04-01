@@ -21,10 +21,10 @@
         .right-anchor-link(
             v-for="(item, index) in anchorActived"
             :key="index" :ref="'anchor'+item.timeDate"
+            :class="{'right-anchor-link-actived': (index*scrollAll <= scrollTop) && (scrollTop < (index+1)*scrollAll)}"
             )
             a(@click="anchorTo(item.timeDate)") {{item.title}}
 </template>
-            // :class="{'right-anchor-link-actived': ((index-1) * pageSize < scrollTop) && (scrollTop <= index * pageSize)}"
 
 <script>
 export default {
@@ -37,7 +37,8 @@ export default {
             pageCurrent: 1,
             postLength: 0,
             anchorActived: [],
-            scrollTop: ''
+            scrollTop: 0,
+            scrollAll: 0
         }
     },
     watch: {
@@ -57,8 +58,14 @@ export default {
                 })
             }
         },
-        '$parent.topValue'(topValue) {
-            // this.scrollTop = topValue / this.pageSize
+        '$parent.topValue': {
+            immediate: true,
+            handler(topValue, oldVal) {
+                let pageSize = this.pageSize
+                let anLength = this.anchorActived.length
+                this.scrollTop = topValue
+                this.scrollAll = 100 / anLength + 0.1
+            }
         }
     },
     filters: {},
