@@ -59,7 +59,7 @@ export default {
             }
         },
         '$parent.topValue': {
-            immediate: true,
+            immediate: false,
             handler(topValue, oldVal) {
                 let pageSize = this.pageSize
                 let anLength = this.anchorActived.length
@@ -91,14 +91,14 @@ export default {
             this.postLength = length
         },
         pageCurrentChange(value) {
-            this.pageCurrent = value
             this.$nextTick(() => {
-                TweenMax.to(window, 0, { scrollTo: document.body.scrollHeight })
+                this.pageCurrent = value
+                TweenMax.to(window, 0, { scrollTo: 0 })
             })
         },
         anchorTo(timeDate) {
             let ref = this.$refs[timeDate][0]
-            TweenMax.to(window, 0.2, { scrollTo: ref.offsetTop })
+            TweenMax.to(window, 0, { scrollTo: ref.offsetTop })
         },
         getRect(ele) {
             let inHeight = window.innerHeight
@@ -280,8 +280,21 @@ export default {
     }
 
     .right-anchor-link-actived {
+        position: relative;
         a {
             color: $theme-link-color !important;
+        }
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: -5px;
+            width: 8px;
+            height: 8px;
+            background-color: #fff;
+            border: 2px solid $theme-link-color;
+            border-radius: 50%;
         }
     }
 

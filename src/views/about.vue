@@ -19,9 +19,10 @@ export default {
                 主体框架：Vue-cli3、Vue-router、Vuex、axios。<br />
                 迅捷开发：pug、scss、moment.js、pace.js、highlight.js、TweenMax.js。<br/>
                 项目优化：cdn、svg、md。<br/>`,
-			Profile: `技术栈：Vue、小程序、PHP、Node.js、Mysql、Linux、Shell、photoshop、Hexo<br/>
+			Profile: `技术栈：Vue、小程序、Node.js、Mongodb、Mysql、PHP、photoshop、Hexo、Linux、Shell<br/>
                 自我简述：网络安全技术专业，热忱于前端，有一定的产品设计能力。<br/>
-                联系方式：573363596@qq.com<br/>`
+                QQ：573363596<br/>
+                微信：xstxhjh`
 		}
 	},
 	components: {},
