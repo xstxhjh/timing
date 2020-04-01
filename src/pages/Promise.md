@@ -1,8 +1,8 @@
 [title]: # (你需要学习的 Promise对象)
 [date]: # (2018-12-21 &nbsp; 10:42:11)
 [categories]: # (ES6+)
-[description]: # (沉下心来，去做一件事情，这便是快乐的时光。<br> 迎风而上还是跌落深渊?)
-[image]: # (https://i.loli.net/2019/08/20/842LqZojNdCJfis.jpg)
+[description]: # (沉下心来，去做一件事情，这便是快乐的时光。)
+[image]: # (https://i.loli.net/2020/04/01/iSIp8K4BRExfjzw.jpg)
 
 ---
 
