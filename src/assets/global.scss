@@ -8,7 +8,7 @@
     text-align: center;
     transition: 0.5s;
     background-size: 200% auto;
-    text-shadow: 0 0 .3rem rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0 0.3rem rgba(0, 0, 0, 0.3);
     box-shadow: 0 0 1rem #ddd;
     background-image: linear-gradient(to right, #fff 0%, #fff 50%, #555 100%);
     cursor: pointer;
@@ -17,33 +17,104 @@
 
 .button-gradient:hover {
     color: #fff;
-    text-shadow: 0 0 .3rem rgba(255, 255, 255, 0.7);
-    background-image: linear-gradient(to right, #fff 0%, $theme-color 50%, $theme-color 100%);
+    text-shadow: 0 0 0.3rem rgba(255, 255, 255, 0.7);
+    background-image: linear-gradient(
+        to right,
+        #fff 0%,
+        $theme-color 50%,
+        $theme-color 100%
+    );
     background-position: right center;
 }
 
-.button-gradient:active{
+.button-gradient:active {
     opacity: 0.5;
 }
 
 
+// 锚点
+.right-anchor {
+    font-size: 1.2rem;
+    min-width: 22rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 8rem;
+    right: 0;
+    max-height: calc(100vh - 25rem);
+    text-align: left;
+    overflow-y: auto;
+    .right-anchor-link {
+        margin-left: 1rem;
+        padding: 0.7rem 1rem 0.7rem 1.6rem;
+        a {
+            border: none;
+            cursor: pointer;
+        }
+        :nth-child(2).right-anchor-link {
+            margin-top: 0.7rem;
+        }
+    }
+
+    .right-anchor-link-actived {
+        position: relative;
+        a {
+            color: $theme-link-color !important;
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: -5px;
+            width: 8px;
+            height: 8px;
+            background-color: #fff;
+            border: 2px solid $theme-link-color;
+            border-radius: 50%;
+        }
+    }
+
+    .right-anchor-ink {
+        position: absolute;
+        top: 0;
+        left: 1rem;
+        height: 100%;
+        &::before {
+            content: ' ';
+            position: relative;
+            display: block;
+            width: 2px;
+            height: 100%;
+            margin: 0 auto;
+            background-color: #e8e8e8;
+        }
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .right-anchor {
+        display: none;
+    }
+}
+
 /* 全局样式修改 */
 
 ::selection {
-	// 选中复制时样式
-	background: #252a31;
-	color: #fff;
+    // 选中复制时样式
+    background: #252a31;
+    color: #fff;
 }
 
 a {
-	color: $theme-color;
-	text-decoration: none;
-	border-bottom: 1px solid $theme-color;
+    color: $theme-color;
+    text-decoration: none;
+    border-bottom: 1px solid $theme-color;
 }
 a:hover {
-	color: $theme-link-color;
-	border-bottom: none;
-	border-bottom: 1px solid $theme-link-color;
+    color: $theme-link-color;
+    border-bottom: none;
+    border-bottom: 1px solid $theme-link-color;
 }
 
 ::-webkit-scrollbar {

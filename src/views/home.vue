@@ -20,7 +20,7 @@
         .right-anchor-ink 
         .right-anchor-link(
             v-for="(item, index) in anchorActived"
-            :key="index" :ref="'anchor'+item.timeDate"
+            :key="index"
             :class="{'right-anchor-link-actived': (index*scrollAll <= scrollTop) && (scrollTop < (index+1)*scrollAll)}"
             )
             a(@click="anchorTo(item.timeDate)") {{item.title}}
@@ -263,67 +263,9 @@ export default {
     }
 }
 
-.right-anchor {
-    font-size: 1.2rem;
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    right: 0;
-    text-align: left;
-
-    .right-anchor-link {
-        padding: 0.7rem 1rem 0.7rem 1.6rem;
-        a {
-            border: none;
-            cursor: pointer;
-        }
-    }
-
-    .right-anchor-link-actived {
-        position: relative;
-        a {
-            color: $theme-link-color !important;
-        }
-
-        &::before {
-            content: "";
-            position: absolute;
-            top: 10px;
-            left: -5px;
-            width: 8px;
-            height: 8px;
-            background-color: #fff;
-            border: 2px solid $theme-link-color;
-            border-radius: 50%;
-        }
-    }
-
-    .right-anchor-ink {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        &::before {
-            content: " ";
-            position: relative;
-            display: block;
-            width: 2px;
-            height: 100%;
-            margin: 0 auto;
-            background-color: #e8e8e8;
-        }
-    }
-}
-
 @media screen and (max-width: 860px) {
     .posts-expand {
         width: 96%;
-    }
-}
-
-@media screen and (max-width: 1000px) {
-    .right-anchor {
-        display: none;
     }
 }
 </style>

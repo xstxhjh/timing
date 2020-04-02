@@ -131,6 +131,7 @@ export default {
 
 .box-left {
     width: 32rem;
+    min-width: 20rem;
     background: $theme-dark-color;
     display: flex;
     align-items: center;
