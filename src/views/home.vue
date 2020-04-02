@@ -9,7 +9,7 @@
             .post-body-content(v-html="item.description")
             .post-body-button(@click="goToPost(item.routeName)") 阅读全文 »
             
-    .end-pagination
+    .end-pagination(:style="$parent.navIconOpen?'':'left:10rem;'")
         .end-pagination-title 页
         .end-pagination-item(
             :class="{'pagination-item-actived': item == pageCurrent}"
@@ -242,12 +242,14 @@ export default {
 
 .end-pagination {
     margin-top: 3rem;
+    mix-blend-mode: exclusion;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: fixed;
     left: 28rem;
+    transition: left 0.2s ease;
     .end-pagination-title {
         font-size: 1.9rem;
         font-weight: bold;
@@ -285,6 +287,7 @@ export default {
 
     .end-pagination {
         left: 0.5rem;
+        margin-left: 0 !important;
     }
 }
 </style>

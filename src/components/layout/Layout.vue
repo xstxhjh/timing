@@ -268,15 +268,6 @@ export default {
     }
 }
 
-@media screen and (max-width: 860px) {
-    .box-left {
-        display: none;
-    }
-    .box-center {
-        padding-right: 0;
-    }
-}
-
 // 百分比进度
 .ProgressBar {
     font-size: 1.3rem;
@@ -326,12 +317,6 @@ export default {
     }
 }
 
-@media screen and (max-width: 860px) {
-    .end-trapezoid {
-        transform: scale(0.5, 0.5) translate(0, 50%);
-    }
-}
-
 // 中间的导航栏
 .nav-views {
     position: sticky;
@@ -355,12 +340,6 @@ export default {
     transition: 0.2s all linear;
     position: relative;
     cursor: pointer;
-}
-
-@media screen and (max-width: 860px) {
-    .nav-views-item {
-        padding: 0.2rem 1rem;
-    }
 }
 
 .nav-views-item-active {
@@ -472,5 +451,23 @@ export default {
 .fade-leave-to {
     opacity: 0;
     transform: translateY(4rem);
+}
+
+
+@media screen and (max-width: 860px) {
+    .box-left {
+        display: none;
+    }
+    .box-center {
+        padding-right: 0;
+    }
+
+    .nav-views-item {
+        padding: 0.2rem 1rem;
+    }
+
+    .end-trapezoid {
+        transform: scale(0.5, 0.5) translate(0, 50%);
+    }
 }
 </style>
