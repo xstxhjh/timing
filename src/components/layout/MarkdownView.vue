@@ -5,11 +5,14 @@
         .right-anchor-ink 
         .right-anchor-link(
             v-for="(item, index) in anchor"
-            :key="index" :ref="'anchor'+index")
+            :key="index"
+            :class="{'right-anchor-link-actived': (item.offsetTop <= offsetTop) && (offsetTop < ((index+1)==anchor.length?Infinity:anchor[index+1].offsetTop))}"
+            )
             a(@click="anchorTo(item.offsetTop)") {{item.title}}
             .right-anchor-link(
                 v-for="(item, index) in item.children"
-                :key="index" :ref="'anchorChildren'+index")
+                :key="index" :ref="'anchorChildren'+index"
+                )
                 a(@click="anchorTo(item.offsetTop)") {{item.title}}
 </template>
 
@@ -24,7 +27,17 @@ export default {
     name: 'MarkdownView',
     data() {
         return {
-            anchor: []
+            anchor: [],
+            offsetTop: 0
+        }
+    },
+    watch: {
+        '$parent.topValue': {
+            immediate: false,
+            handler(topValue, oldVal) {
+                let offsetTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageXOffset
+                this.offsetTop = offsetTop + 180
+            }
         }
     },
     methods: {
@@ -56,6 +69,9 @@ export default {
             }
         })
         this.anchor = anchor
+        anchor.map(item =>{
+            console.log(item.offsetTop)
+        })
     },
     activated() { },
     updated() { }

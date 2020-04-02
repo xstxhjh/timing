@@ -58,7 +58,7 @@
 
     .right-anchor-link-actived {
         position: relative;
-        a {
+        & > a {
             color: $theme-link-color !important;
         }
 
