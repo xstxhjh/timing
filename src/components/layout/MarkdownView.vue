@@ -69,9 +69,6 @@ export default {
             }
         })
         this.anchor = anchor
-        anchor.map(item =>{
-            console.log(item.offsetTop)
-        })
     },
     activated() { },
     updated() { }

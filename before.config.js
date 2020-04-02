@@ -23,6 +23,7 @@ function beforeFn() {
     dirSync.map(item => {
         if (item.match(/\.(\S*)/)[1] != 'md') return
         let fileSync = fs.readFileSync(resolve(`src/pages/${item}`), 'utf-8')
+
         let str = fileSync.split('---')[0].replace(/\s*/g, '')
         let timeDate = str.match(/\[date\]:#\((.*?)\)/)[1].replace(/-|&nbsp;|:/g, '')
         mdArr.push({
@@ -30,7 +31,7 @@ function beforeFn() {
             routeName: item.match(/(\S*)\./)[1],
             fileContent: str,
             timeDate: timeDate,
-            wordCount: str.length
+            wordCount: fileSync.length
         })
     })
     mdArr.sort(compare('timeDate'))

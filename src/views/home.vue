@@ -10,6 +10,7 @@
             .post-body-button(@click="goToPost(item.routeName)") 阅读全文 »
             
     .end-pagination
+        .end-pagination-title 页
         .end-pagination-item(
             :class="{'pagination-item-actived': item == pageCurrent}"
             v-for="item in Math.ceil(postLength/pageSize)"
@@ -64,9 +65,15 @@ export default {
                 let pageSize = this.pageSize
                 let anLength = this.anchorActived.length
                 this.scrollTop = topValue
-                this.scrollAll = 100 / anLength + 0.1
+                this.scrollAll = 100 / anLength + 3
             }
-        }
+        },
+        '$route': {
+            immediate: true,
+            handler(newVal, oldVal) {
+                this.pageCurrent = newVal.query.pageCurrent || 1
+            }
+        },
     },
     filters: {},
     computed: {
@@ -91,9 +98,12 @@ export default {
             this.postLength = length
         },
         pageCurrentChange(value) {
-            this.$nextTick(() => {
-                this.pageCurrent = value
-                TweenMax.to(window, 0, { scrollTo: 0 })
+            if (this.pageCurrent == value) return
+            this.$router.push({
+                path: '/',
+                query: {
+                    pageCurrent: value
+                }
             })
         },
         anchorTo(timeDate) {
@@ -187,7 +197,8 @@ export default {
     width: 90%;
     margin: 0 auto;
     .post-body-image {
-        width: 100%;
+        max-width: 100%;
+        max-height: 40rem;
         padding: 0.3rem;
         border: 0.1rem solid #ddd;
         margin: 3rem 0 2rem;
@@ -230,42 +241,50 @@ export default {
 }
 
 .end-pagination {
-    width: 50%;
-    padding: 2rem 20% 1rem;
     margin-top: 3rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: fixed;
+    left: 28rem;
+    .end-pagination-title {
+        font-size: 1.9rem;
+        font-weight: bold;
+        user-select: none;
+    }
 
     .end-pagination-item {
         font-size: 1.6rem;
-        width: 3rem;
-        height: 3rem;
-        background-color: #fff;
-        border: 1px solid #d9d9d9;
-        border-radius: 4px;
-        margin: 0 1rem;
+        line-height: 1.25;
+        font-weight: bold;
+        color: #d9d9d9;
+        width: 2rem;
+        height: 2rem;
+        border: 2px solid #d9d9d9;
+        border-radius: 50%;
+        margin: 0.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
         user-select: none;
         cursor: pointer;
-
-        &:hover {
-            font-weight: bold;
-            border: 1px solid $theme-color;
-        }
     }
 
-    .pagination-item-actived {
-        font-weight: bold;
-        border: 1px solid $theme-color;
+    .pagination-item-actived,
+    .end-pagination-item:hover {
+        color: $theme-color;
+        border: 2px solid $theme-color;
     }
 }
 
 @media screen and (max-width: 860px) {
     .posts-expand {
         width: 96%;
+    }
+
+    .end-pagination {
+        left: 0.5rem;
     }
 }
 </style>
