@@ -896,6 +896,8 @@ function mountFragment(vnode, container, isSVG) {
 }
 ```
 
+那么这样设计有什么意义呢？这是因为在 patch 阶段对DOM元素进行移动时，应该确保将其放到正确的位置，而不应该始终使用 appendChild 函数，有时需要使用 insertBefore 函数，这时候我们就需要拿到相应的节点引用，这时候 vnode.el 属性是必不可少的，就像上面的代码中即使 Fragment 没有子节点我们依然需要一个占位的空文本节点作为位置的引用。
+
 
 ### 挂载 Portal
 
