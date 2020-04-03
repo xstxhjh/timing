@@ -198,7 +198,6 @@ export default {
     margin: 0 auto;
     .post-body-image {
         max-width: 100%;
-        max-height: 40rem;
         padding: 0.3rem;
         border: 0.1rem solid #ddd;
         margin: 3rem 0 2rem;

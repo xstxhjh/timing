@@ -36,14 +36,16 @@
 .right-anchor {
     font-size: 1.2rem;
     min-width: 22rem;
+    max-height: calc(100vh - 25rem);
     display: flex;
     flex-direction: column;
     position: fixed;
     top: 8rem;
     right: 0;
-    max-height: calc(100vh - 25rem);
     text-align: left;
     overflow-y: auto;
+    background: #fff;
+    border-radius: 0.4rem;
     .right-anchor-link {
         margin-left: 1rem;
         padding: 0.7rem 1rem 0.7rem 1.6rem;

@@ -75,6 +75,12 @@ export default {
 }
 </script>
 
+<style>
+.router-post-body-image {
+    width: 100%;
+}
+</style>
+
 <style lang="scss" scoped>
 .router-post-body {
     font-family: "Monda", "PingFang SC", "Microsoft YaHei", sans-serif;
