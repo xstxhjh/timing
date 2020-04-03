@@ -403,6 +403,8 @@ function normalizeVNodes(children) {
 }
 ```
 
+## 使用 h 函数创建 VNode
+
 例子：
 假设有如下模板：
 ```html

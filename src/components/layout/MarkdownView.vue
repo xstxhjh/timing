@@ -49,26 +49,28 @@ export default {
     mounted() {
         // highlight.js 代码高亮
         hljs.highlightCode()
-        let dom = document.getElementsByClassName('router-post-body')[0].children
-        let anchor = []
-        let isTitle = false
-        ![...dom].map(item => {
-            if (item.localName == 'h1') {
-                anchor.push({
-                    title: item.innerText,
-                    offsetTop: item.offsetTop,
-                    children: []
-                })
-                isTitle = anchor[anchor.length - 1]
-            } else if (item.localName == 'h2') {
-                isTitle.children.push({
-                    title: item.innerText,
-                    offsetTop: item.offsetTop,
-                    children: []
-                })
-            }
-        })
-        this.anchor = anchor
+        setTimeout(() => {
+            let dom = document.getElementsByClassName('router-post-body')[0].children
+            let anchor = []
+            let isTitle = false
+            ![...dom].map(item => {
+                if (item.localName == 'h1') {
+                    anchor.push({
+                        title: item.innerText,
+                        offsetTop: item.offsetTop,
+                        children: []
+                    })
+                    isTitle = anchor[anchor.length - 1]
+                } else if (item.localName == 'h2') {
+                    isTitle.children.push({
+                        title: item.innerText,
+                        offsetTop: item.offsetTop,
+                        children: []
+                    })
+                }
+            })
+            this.anchor = anchor
+        }, 1000)
     },
     activated() { },
     updated() { }

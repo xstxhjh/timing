@@ -31,7 +31,6 @@
     opacity: 0.5;
 }
 
-
 // 锚点
 .right-anchor {
     font-size: 1.2rem;
@@ -104,7 +103,7 @@
 
 ::selection {
     // 选中复制时样式
-    background: #252a31;
+    background: $theme-link-color;
     color: #fff;
 }
 
@@ -148,4 +147,27 @@ a:hover {
             background-color: rgba(50, 50, 50, 0.5);
         }
     }
+}
+
+code {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.pace .pace-progress {
+    background: #333;
+    /*进度条颜色*/
+    height: 2px;
+}
+
+.pace .pace-progress-inner {
+    box-shadow: 0 0 10px #333, 0 0 5px #333;
+    /*阴影颜色*/
+}
+
+.pace .pace-activity {
+    border-top-color: #333;
+    /*上边框颜色*/
+    border-left-color: #333;
+    /*左边框颜色*/
 }

@@ -49,6 +49,10 @@ html {
 	overflow-x: hidden;
 }
 
+body {
+    margin: 0;
+}
+
 html,
 body,
 #app {

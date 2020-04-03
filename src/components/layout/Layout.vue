@@ -4,7 +4,7 @@
       .box-left-content
         .box-left-info(v-show="navIconOpen")
           img.avatar(src='https://i.loli.net/2019/08/05/Lo9nyjTO5ZUN6im.jpg')
-          router-link(to="about").nickname Chirenmeng
+          router-link(to="/about").nickname Chirenmeng
           .sketch 一个属于前端的博客
           a(target="_blank" href="https://github.com/xstxhjh").github
             svg-icon(icon-class="github" class="github-icon")
