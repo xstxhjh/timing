@@ -600,3 +600,379 @@ const statefulComponentVNode = {
   el: null
 }
 ```
+
+---
+
+# 渲染器之挂载
+
+## 责任重大的渲染器
+
+所谓渲染器，简单的说就是将 Virtual DOM 渲染成特定平台下真实 DOM 的工具(就是一个函数，通常叫 render)，渲染器的工作流程分为两个阶段：mount 和 patch，如果旧的 VNode 存在，则会使用新的 VNode 与旧的 VNode 进行对比，试图以最小的资源开销完成 DOM 的更新，这个过程就叫 patch，或“打补丁”。如果旧的 VNode 不存在，则直接将新的 VNode 挂载成全新的 DOM，这个过程叫做 mount。
+
+通常渲染器接收两个参数，第一个参数是将要被渲染的 VNode 对象，第二个参数是一个用来承载内容的容器(container)，通常也叫挂载点。
+
+```js
+function render(vnode, container) {
+  const prevVNode = container.vnode
+  if (prevVNode == null) {
+    if (vnode) {
+      // 没有旧的 VNode，只有新的 VNode。使用 `mount` 函数挂载全新的 VNode
+      mount(vnode, container)
+      // 将新的 VNode 添加到 container.vnode 属性下，这样下一次渲染时旧的 VNode 就存在了
+      container.vnode = vnode
+    }
+  } else {
+    if (vnode) {
+      // 有旧的 VNode，也有新的 VNode。则调用 `patch` 函数打补丁
+      patch(prevVNode, vnode, container)
+      // 更新 container.vnode
+      container.vnode = vnode
+    } else {
+      // 有旧的 VNode 但是没有新的 VNode，这说明应该移除 DOM，在浏览器中可以使用 removeChild 函数。
+      container.removeChild(prevVNode.el)
+      container.vnode = null
+    }
+  }
+}
+```
+
+- 控制部分组件生命周期钩子的调用
+在整个渲染周期中包含了大量的 DOM 操作、组件的挂载、卸载，控制着组件的生命周期钩子调用的时机。
+
+- 多端渲染的桥梁
+渲染器也是多端渲染的桥梁，自定义渲染器的本质就是把特定平台操作“DOM”的方法从核心算法中抽离，并提供可配置的方案。
+
+- 与异步渲染有直接关系
+Vue3 的异步渲染是基于调度器的实现，若要实现异步渲染，组件的挂载就不能同步进行，DOM的变更就要在合适的时机，一些需要在真实DOM存在之后才能执行的操作(如 ref)也应该在合适的时机进行。对于时机的控制是由调度器来完成的，但类似于组件的挂载与卸载以及操作 DOM 等行为的入队还是由渲染器来完成的，这也是为什么 Vue2 无法轻易实现异步渲染的原因。
+
+- 包含最核心的 Diff 算法
+Diff 算法是渲染器的核心特性之一，可以说正是 Diff 算法的存在才使得 Virtual DOM 如此成功。
+
+## 挂载标签元素
+
+mount 函数的作用是把一个 VNode 渲染成真实 DOM
+
+```js
+function mount(vnode, container) {
+  const { flags } = vnode
+  if (flags & VNodeFlags.ELEMENT) {
+    // 挂载普通标签
+    mountElement(vnode, container)
+  } else if (flags & VNodeFlags.COMPONENT) {
+    // 挂载组件
+    mountComponent(vnode, container)
+  } else if (flags & VNodeFlags.TEXT) {
+    // 挂载纯文本
+    mountText(vnode, container)
+  } else if (flags & VNodeFlags.FRAGMENT) {
+    // 挂载 Fragment
+    mountFragment(vnode, container)
+  } else if (flags & VNodeFlags.PORTAL) {
+    // 挂载 Portal
+    mountPortal(vnode, container)
+  }
+}
+```
+
+```js
+function mountElement(vnode, container) {
+  const isSVG = vnode.flags & VNodeFlags.ELEMENT_SVG
+  const el = isSVG
+    ? document.createElementNS('http://www.w3.org/2000/svg', vnode.tag)
+    : document.createElement(vnode.tag)
+  // 解决 不能严谨地处理 SVG 标签
+    
+  vnode.el = el
+  // 解决 VNode 被渲染为真实DOM之后，没有引用真实DOM元素
+
+  // 拿到 VNodeData
+  const data = vnode.data
+  if (data) {
+    // 如果 VNodeData 存在，则遍历之
+    for(let key in data) {
+      // key 可能是 class、style、on 等等
+      switch(key) {
+        case 'style':
+          // 如果 key 的值是 style，说明是内联样式，逐个将样式规则应用到 el
+          for(let k in data.style) {
+            el.style[k] = data.style[k]
+          }
+        break
+      }
+    }
+  }
+  // 解决 没有将 VNodeData 应用到元素上
+
+  // 递归挂载子节点
+  // 拿到 children 和 childFlags
+  const childFlags = vnode.childFlags
+  const children = vnode.children
+  // 检测如果没有子节点则无需递归挂载
+  if (childFlags !== ChildrenFlags.NO_CHILDREN) {
+    if (childFlags & ChildrenFlags.SINGLE_VNODE) {
+      // 如果是单个子节点则调用 mount 函数挂载
+      mount(children, el)
+    } else if (childFlags & ChildrenFlags.MULTIPLE_VNODES) {
+      // 如果是单多个子节点则遍历并调用 mount 函数挂载
+      for (let i = 0; i < children.length; i++) {
+        mount(children[i], el)
+      }
+    }
+  }
+  // 解决 没有继续挂载子节点，即 children
+
+  const childFlags = vnode.childFlags
+  if (childFlags !== ChildrenFlags.NO_CHILDREN) {
+    if (childFlags & ChildrenFlags.SINGLE_VNODE) {
+      // 这里需要把 isSVG 传递下去
+      mount(children, el, isSVG)
+    } else if (childFlags & ChildrenFlags.MULTIPLE_VNODES) {
+      for (let i = 0; i < children.length; i++) {
+        // 这里需要把 isSVG 传递下去
+        mount(children[i], el, isSVG)
+      }
+    }
+  }
+  // 解决 svg 标签的子代元素挂载
+
+  container.appendChild(el)
+}
+```
+
+## class的处理
+
+```js
+// 数组
+dynamicClass = ['class-b', 'class-c']
+
+// 对象
+dynamicClass = {
+  'class-b': true,
+  'class-c': true
+}
+
+h('div', {
+  class: ['class-a', dynamicClass]
+})
+```
+
+在框架设计中比较重要的概念：应用层的设计，这是框架设计的核心，在设计一个功能的时候，你首先要考虑的应该是应用层的使用，然后再考虑如何与底层衔接。还是以 class 为例，为一个标签元素设置类名的方法是可定的(调用 el.className 或 setAttribute)，关键就在于你想在应用层做出怎样的设计，很自然的你要思考如何转化应用层的数据结构与底层衔接。
+
+## Attributes 和 DOM Properties
+
+DOM的 Attributes 以及 Properties， 分别简称他们为 attr 和 DOM Prop。
+
+Attr 指的就是那些存在于标签上的属性，而 DOM Prop 就是存在于DOM对象上的属性。但是当标签上存在非标准属性时，该属性不会被转化为 DOM Prop
+
+```js
+// checkbox 元素
+const checkboxEl = document.querySelector('input')
+// 使用 setAttribute 设置 checked 属性为 false
+checkboxEl.setAttribute('checked', false)
+
+console.log(checkboxEl.checked) // true
+```
+
+可以看到虽然我们使用 setAttribute 函数将复选框的 checked 属性设置为 false，但是当我们访问 checkboxEl.checked 时得到的依然是 true，这是因为在 setAttribute 函数为元素设置属性时，无论你传递的值是什么类型，它都会将该值转为字符串再设置到元素上，所以如下两句代码是等价的：
+
+```js
+checkboxEl.setAttribute('checked', false)
+// 等价于
+checkboxEl.setAttribute('checked', 'false')
+```
+
+```js
+const domPropsRE = /\[A-Z]|^(?:value|checked|selected|muted)$/
+function mountElement(vnode, container, isSVG) {
+  // 省略...
+
+  const data = vnode.data
+  if (data) {
+    for (let key in data) {
+      switch (key) {
+        case 'style':
+          for (let k in data.style) {
+            el.style[k] = data.style[k]
+          }
+          break
+        case 'class':
+          el.className = data[key]
+          break
+        default:
+          if (domPropsRE.test(key)) {
+            // 当作 DOM Prop 处理
+            el[key] = data[key]
+          } else {
+            // 当作 Attr 处理
+            el.setAttribute(key, data[key])
+          }
+          break
+      }
+    }
+  }
+
+  // 省略...
+}
+```
+
+## 事件的处理
+```js
+function mountElement(vnode, container, isSVG) {
+  // 省略...
+
+  const data = vnode.data
+  if (data) {
+    for (let key in data) {
+      switch (key) {
+        case 'style':
+          for (let k in data.style) {
+            el.style[k] = data.style[k]
+          }
+          break
+        case 'class':
+          if (isSVG) {
+            el.setAttribute('class', data[key])
+          } else {
+            el.className = data[key]
+          }
+          break
+        default:
+          if (key[0] === 'o' && key[1] === 'n') {
+            // 事件
+            el.addEventListener(key.slice(2), data[key])
+          } else if (domPropsRE.test(key)) {
+            // 当作 DOM Prop 处理
+            el[key] = data[key]
+          } else {
+            // 当作 Attr 处理
+            el.setAttribute(key, data[key])
+          }
+          break
+      }
+    }
+  }
+
+  // 省略...
+}
+```
+
+
+## 挂载纯文本、Fragment 和 Portal
+
+### 挂载文本节点
+
+```js
+function mountText(vnode, container) {
+  const el = document.createTextNode(vnode.children)
+  vnode.el = el
+  container.appendChild(el)
+}
+```
+
+
+### 挂载 Fragment
+```js
+function mountFragment(vnode, container, isSVG) {
+  const { children, childFlags } = vnode
+  switch (childFlags) {
+    case ChildrenFlags.SINGLE_VNODE:
+      mount(children, container, isSVG)
+      // 单个子节点，就指向该节点
+      vnode.el = children.el
+      break
+    case ChildrenFlags.NO_CHILDREN:
+      const placeholder = createTextVNode('')
+      mountText(placeholder, container)
+      // 没有子节点指向占位的空文本节点
+      vnode.el = placeholder.el
+      break
+    default:
+      for (let i = 0; i < children.length; i++) {
+        mount(children[i], container, isSVG)
+      }
+      // 多个子节点，指向第一个子节点
+      vnode.el = children[0].el
+  }
+}
+```
+
+
+### 挂载 Portal
+
+Portal 可以不严谨地认为是可以被到处挂载的 Fragment
+
+```js
+function mountPortal(vnode, container) {
+  const { tag, children, childFlags } = vnode
+  const target = typeof tag === 'string' ? document.querySelector(tag) : tag
+  if (childFlags & ChildrenFlags.SINGLE_VNODE) {
+    mount(children, target)
+  } else if (childFlags & ChildrenFlags.MULTIPLE_VNODES) {
+    for (let i = 0; i < children.length; i++) {
+      mount(children[i], target)
+    }
+  }
+
+  // 占位的空文本节点
+  const placeholder = createTextVNode('')
+  // 将该节点挂载到 container 中
+  mountText(placeholder, container, null)
+  // el 属性引用该节点
+  vnode.el = placeholder.el
+}
+```
+
+
+### 有状态组件的挂载和原理
+
+第一步：创建组件实例
+如果一个 VNode 描述的是有状态组件，那么 vnode.tag 属性值就是组件类的引用，所以通过 new 关键字创建组件实例。
+
+第二步：获取组件产出的 VNode
+一个组件的核心就是其 render 函数，通过调用 render 函数可以拿到该组件要渲染的内容。
+
+第三步：mount 挂载
+既然已经拿到了 VNode，那么就将其挂载到 container 上就可以了。
+
+第四步：让组件实例的 $el 属性和 vnode.el 属性的值引用组件的根DOM元素
+组件的 render 函数会返回该组件产出的 VNode，当该 VNode 被挂载为真实DOM之后，就可以通过 instance.$vnode.el 元素拿到组件的根DOM元素，接着我们就可以让组件实例的 $el 属性和 vnode.el 属性的值都引用该DOM元素。如果组件的 render 返回的是一个片段(Fragment)，那么 instance.$el 和 vnode.el 引用的就是该片段的第一个DOM元素。
+
+```js
+function mountComponent(vnode, container, isSVG) {
+  if (vnode.flags & VNodeFlags.COMPONENT_STATEFUL) {
+    mountStatefulComponent(vnode, container, isSVG)
+  } else {
+    mountFunctionalComponent(vnode, container, isSVG)
+  }
+}
+
+function mountStatefulComponent(vnode, container, isSVG) {
+  // 创建组件实例
+  const instance = new vnode.tag()
+  // 渲染VNode
+  instance.$vnode = instance.render()
+  // 挂载
+  mount(instance.$vnode, container, isSVG)
+  // el 属性值 和 组件实例的 $el 属性都引用组件的根DOM元素
+  instance.$el = vnode.el = instance.$vnode.el
+}
+```
+
+
+### 函数式组件的挂载和原理
+
+在挂载函数式组件的时候，比挂载有状态组件少了一个实例化的过程，如果一个 VNode 描述的是函数式组件，那么其 tag 属性值就是该函数的引用
+
+```js
+function mountFunctionalComponent(vnode, container, isSVG) {
+  // 获取 VNode
+  const $vnode = vnode.tag()
+  // 挂载
+  mount($vnode, container, isSVG)
+  // el 元素引用该组件的根元素
+  vnode.el = $vnode.el
+}
+```
+
+实际上如果对于 有状态组件 和 函数式组件 具体的区别不太了解的同学看到这里或许会产生疑问，觉得 有状态组件 的实例化很多余，实际上实例化是必须的，因为 有状态组件 在实例化的过程中会初始化一系列 有状态组件 所特有的东西，诸如 data(或state)、computed、watch、生命周期等等。而函数式组件只有 props 和 slots，它要做的工作很少，所以性能上会更好。
+

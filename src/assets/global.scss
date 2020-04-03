@@ -149,9 +149,24 @@ a:hover {
     }
 }
 
+// 代码换行
 code {
     white-space: pre-wrap;
     word-wrap: break-word;
+}
+// 分割线
+hr {
+    margin: 3rem 0;
+    height: 0.3rem;
+    border: none;
+    background-color: #ddd;
+    background-image: repeating-linear-gradient(
+        -45deg,
+        #fff,
+        #fff 0.4rem,
+        transparent 0.4rem,
+        transparent 0.8rem
+    );
 }
 
 .pace .pace-progress {

@@ -2,7 +2,7 @@
     .about-box
       .about-box-title 关于博客
       .about-box-content(v-html="project")
-      .box-border
+      hr
       .about-box-title 关于作者
       .about-box-content(v-html="Profile")
 
@@ -20,7 +20,7 @@ export default {
                 迅捷开发：pug、scss、moment.js、pace.js、highlight.js、TweenMax.js。<br/>
                 项目优化：cdn、svg、md。<br/>`,
 			Profile: `技术栈：Vue、小程序、Node.js、Mongodb、Mysql、PHP、photoshop、Hexo、Linux、Shell<br/>
-                自我简述：网络安全技术专业，热忱于前端，有一定的产品设计能力。<br/>
+                简述：不要忘了和大家一起交流，这样你的作品才会出彩~！<br/>
                 QQ：573363596<br/>
                 微信：xstxhjh`
 		}
@@ -57,14 +57,6 @@ export default {
 	.about-box {
 		width: 96% !important;
 	}
-}
-
-.box-border {
-	margin: 3rem 0;
-	height: 0.3rem;
-	border: none;
-	background-color: #ddd;
-	background-image: repeating-linear-gradient(-45deg, #fff, #fff 0.4rem, transparent 0.4rem, transparent 0.8rem);
 }
 
 .go-home {

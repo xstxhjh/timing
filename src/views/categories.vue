@@ -5,6 +5,7 @@
             .category-list-item(v-for="item in categories" :class="activeTitle==item.title?'active-title':''")
                 span(@click="getPostList(item)") {{item.title}}
                 span ┃ {{item.children.length}}
+        hr
         .post-list
             .post-list-item(v-for="item in postList")
                 a(@click="goToPost(item.routeName)") {{item.title}}
@@ -91,9 +92,7 @@ export default {
 }
 
 .post-list {
-  margin-top: 1rem;
-  padding-top: 2rem;
-  border-top: 0.6rem solid #f5f5f5;
+  padding-top: 1rem;
 }
 
 .post-list-item {
