@@ -978,3 +978,765 @@ function mountFunctionalComponent(vnode, container, isSVG) {
 
 实际上如果对于 有状态组件 和 函数式组件 具体的区别不太了解的同学看到这里或许会产生疑问，觉得 有状态组件 的实例化很多余，实际上实例化是必须的，因为 有状态组件 在实例化的过程中会初始化一系列 有状态组件 所特有的东西，诸如 data(或state)、computed、watch、生命周期等等。而函数式组件只有 props 和 slots，它要做的工作很少，所以性能上会更好。
 
+
+---
+
+
+# 渲染器之patch
+
+渲染器除了将全新的 VNode 挂载成真实DOM之外，它的另外一个职责是负责对新旧 VNode 进行比对，并以合适的方式更新DOM，也就是我们常说的 patch。
+
+## 基本原则
+
+通常重渲染(re-render)是由组件的更新开始的，因为在框架的使用层面开发者通过变更数据状态从而引起框架内部对UI的自动更新，但是组件的更新本质上还是对真实DOM的更新，或者说是对标签元素的更新。
+
+```js
+function render(vnode, container) {
+  const prevVNode = container.vnode
+  if (prevVNode == null) {
+    if (vnode) {
+      // 没有旧的 VNode，使用 `mount` 函数挂载全新的 VNode
+      mount(vnode, container)
+      // 将新的 VNode 添加到 container.vnode 属性下，这样下一次渲染时旧的 VNode 就存在了
+      container.vnode = vnode
+    }
+  } else {
+    if (vnode) {
+      // 有旧的 VNode，则调用 `patch` 函数打补丁
+      patch(prevVNode, vnode, container)
+      // 更新 container.vnode
+      container.vnode = vnode
+    } else {
+      // 有旧的 VNode 但是没有新的 VNode，这说明应该移除 DOM，在浏览器中可以使用 removeChild 函数。
+      container.removeChild(prevVNode.el)
+      container.vnode = null
+    }
+  }
+}
+```
+
+```js
+// 旧的 VNode
+const prevVNode = h('div')
+
+// 新的 VNode
+const nextVNode = h('span')
+
+// 第一次渲染 VNode 到 #app，此时会调用 mount 函数
+render(prevVNode, document.getElementById('app'))
+
+// 第二次渲染新的 VNode 到相同的 #app 元素，此时会调用 patch 函数
+render(nextVNode, document.getElementById('app'))
+```
+
+不同的 VNode 之间第一个比对原则就是：只有相同类型的 VNode 才有比对的意义，例如我们有两个 VNode，其中一个 VNode 的类型是标签元素，而另一个 VNode 的类型是组件，当这两个 VNode 进行比对时，最优的做法是使用新的 VNode 完全替换旧的 VNode。
+
+```js
+function patch(prevVNode, nextVNode, container) {
+  // 分别拿到新旧 VNode 的类型，即 flags
+  const nextFlags = nextVNode.flags
+  const prevFlags = prevVNode.flags
+
+  // 检查新旧 VNode 的类型是否相同，如果类型不同，则直接调用 replaceVNode 函数替换 VNode
+  // 如果新旧 VNode 的类型相同，则根据不同的类型调用不同的比对函数
+  if (prevFlags !== nextFlags) {
+    replaceVNode(prevVNode, nextVNode, container)
+  } else if (nextFlags & VNodeFlags.ELEMENT) {
+    patchElement(prevVNode, nextVNode, container)
+  } else if (nextFlags & VNodeFlags.COMPONENT) {
+    patchComponent(prevVNode, nextVNode, container)
+  } else if (nextFlags & VNodeFlags.TEXT) {
+    patchText(prevVNode, nextVNode)
+  } else if (nextFlags & VNodeFlags.FRAGMENT) {
+    patchFragment(prevVNode, nextVNode, container)
+  } else if (nextFlags & VNodeFlags.PORTAL) {
+    patchPortal(prevVNode, nextVNode)
+  }
+}
+```
+
+核心原则是：如果类型不同，则直接调用 replaceVNode 函数使用新的 VNode 替换旧的 VNode，否则根据不同的类型调用与之相符的比对函数。
+
+
+## 替换 VNode
+
+```js
+// 旧的 VNode 是一个 div 标签
+const prevVNode = h('div', null, '旧的 VNode')
+
+class MyComponent {
+  render () {
+    return h('h1', null, '新的 VNode')
+  }
+}
+// 新的 VNode 是一个组件
+const nextVNode = h(MyComponent)
+
+// 先后渲染新旧 VNode 到 #app
+render(prevVNode, document.getElementById('app'))
+render(nextVNode, document.getElementById('app'))
+```
+
+替换操作并不复杂，本质就是把旧的 VNode 所渲染的DOM移除，再挂载新的 VNode
+
+```js
+function replaceVNode(prevVNode, nextVNode, container) {
+  // 将旧的 VNode 所渲染的 DOM 从容器中移除
+  container.removeChild(prevVNode.el)
+  // 再把新的 VNode 挂载到容器中
+  mount(nextVNode, container)
+}
+```
+
+
+## 更新标签元素
+
+### 更新标签元素的基本原则
+
+我们认为不同的标签渲染的内容不同。
+
+相同标签拥有不同样式时,先将红色背景从元素上移除，再为元素添加绿色边框。
+
+宏观化：将新的 VNodeData 全部应用到元素上，再把那些已经不存在于新的 VNodeData 上的数据从元素上移除。
+
+```js
+// 旧的 VNode
+const prevVNode = h('div', {
+  style: {
+    width: '100px',
+    height: '100px',
+    backgroundColor: 'red'
+  }
+})
+
+// 新的 VNode
+const nextVNode = h('div', {
+  style: {
+    width: '100px',
+    height: '100px',
+    border: '1px solid green'
+  }
+})
+```
+
+```js
+function patchElement(prevVNode, nextVNode, container) {
+  // 如果新旧 VNode 描述的是不同的标签，则调用 replaceVNode 函数，使用新的 VNode 替换旧的 VNode
+  if (prevVNode.tag !== nextVNode.tag) {
+    replaceVNode(prevVNode, nextVNode, container)
+    return
+  }
+
+  // 拿到 el 元素，注意这时要让 nextVNode.el 也引用该元素
+  const el = (nextVNode.el = prevVNode.el)
+  // 拿到 新旧 VNodeData
+  const prevData = prevVNode.data
+  const nextData = nextVNode.data
+  // 新的 VNodeData 存在时才有必要更新
+  if (nextData) {
+    // 遍历新的 VNodeData
+    for (let key in nextData) {
+      // 根据 key 拿到新旧 VNodeData 值
+      const prevValue = prevData[key]
+      const nextValue = nextData[key]
+      switch (key) {
+        case 'style':
+          // 遍历新 VNodeData 中的 style 数据，将新的样式应用到元素
+          for (let k in nextValue) {
+            el.style[k] = nextValue[k]
+          }
+          // 遍历旧 VNodeData 中的 style 数据，将已经不存在于新的 VNodeData 的数据移除
+          for (let k in prevValue) {
+            if (!nextValue.hasOwnProperty(k)) {
+              el.style[k] = ''
+            }
+          }
+          break
+        default:
+          break
+      }
+    }
+  }
+}
+```
+
+我们在更新 VNodeData 时的思路分为以下几步：
+第 1 步：当新的 VNodeData 存在时，遍历新的 VNodeData。
+第 2 步：根据新 VNodeData 中的 key，分别尝试读取旧值和新值，即 prevValue 和 nextValue。
+第 3 步：使用 switch...case 语句匹配不同的数据进行不同的更新操作
+
+以样式(style)的更新为例，如上代码所展示的更新过程是：
+1 ：遍历新的样式数据(prevValue)，将新的样式数据全部应用到元素上
+2 ：遍历旧的样式数据(nextValue)，将那些已经不存在于新的样式数据中的样式从元素上移除，最终我们完成了元素样式的更新。
+
+
+### 更新 VNodeData
+
+patchData 函数修改 patchElement 函数的代码
+
+```js
+function patchElement(prevVNode, nextVNode, container) {
+  // 如果新旧 VNode 描述的是不同的标签，则调用 replaceVNode 函数，使用新的 VNode 替换旧的 VNode
+  if (prevVNode.tag !== nextVNode.tag) {
+    replaceVNode(prevVNode, nextVNode, container)
+    return
+  }
+
+  // 拿到 el 元素，注意这时要让 nextVNode.el 也引用该元素
+  const el = (nextVNode.el = prevVNode.el)
+  const prevData = prevVNode.data
+  const nextData = nextVNode.data
+
+  if (nextData) {
+    // 遍历新的 VNodeData，将旧值和新值都传递给 patchData 函数
+    for (let key in nextData) {
+      const prevValue = prevData[key]
+      const nextValue = nextData[key]
+      patchData(el, key, prevValue, nextValue)
+    }
+  }
+  if (prevData) {
+    // 遍历旧的 VNodeData，将已经不存在于新的 VNodeData 中的数据移除
+    for (let key in prevData) {
+      const prevValue = prevData[key]
+      if (prevValue && !nextData.hasOwnProperty(key)) {
+        // 第四个参数为 null，代表移除数据
+        patchData(el, key, prevValue, null)
+      }
+    }
+  }
+}
+```
+
+历新的 VNodeData，将旧值和新值都传递给 patchData 函数，并由 patchData 函数负责更新数据；同时也需要遍历旧的 VNodeData，将已经不存在于新的 VNodeData 中的数据从元素上移除。
+
+patchData 函数：
+
+```js
+export function patchData(el, key, prevValue, nextValue) {
+  switch (key) {
+    case 'style':
+      for (let k in nextValue) {
+        el.style[k] = nextValue[k]
+      }
+      for (let k in prevValue) {
+        if (!nextValue.hasOwnProperty(k)) {
+          el.style[k] = ''
+        }
+      }
+      break
+    case 'class':
+      el.className = nextValue
+      break
+    default:
+      if (key[0] === 'o' && key[1] === 'n') {
+        // 事件
+        el.addEventListener(key.slice(2), nextValue)
+      } else if (domPropsRE.test(key)) {
+        // 当作 DOM Prop 处理
+        el[key] = nextValue
+      } else {
+        // 当作 Attr 处理
+        el.setAttribute(key, nextValue)
+      }
+      break
+  }
+}
+```
+
+这样 patchData 函数就能够用来处理 style、class、DOM Prop 以及 Attr 的更新操作，并且可以同时满足 mountElement 和 patchElement 的需求。但 patchData 函数还不能够满足事件的更新操作，因为当新的 VNodeData 中已经不包含某个事件时，我们需要将旧的事件回调函数移除.
+
+```js
+export function patchData(el, key, prevValue, nextValue) {
+  switch (key) {
+    case 'style':
+      // 省略处理样式的代码...
+    case 'class':
+      // 省略处理 class 的代码...
+    default:
+      if (key[0] === 'o' && key[1] === 'n') {
+        // 事件
+        // 移除旧事件
+        if (prevValue) {
+          el.removeEventListener(key.slice(2), prevValue)
+        }
+        // 添加新事件
+        if (nextValue) {
+          el.addEventListener(key.slice(2), nextValue)
+        }
+      } else if (domPropsRE.test(key)) {
+        // 当作 DOM Prop 处理
+        el[key] = nextValue
+      } else {
+        // 当作 Attr 处理
+        el.setAttribute(key, nextValue)
+      }
+      break
+  }
+}
+```
+
+### 更新子节点
+
+patchElement 函数中最后一步需要做的事情就是递归地更新子节点
+
+```js
+function patchElement(prevVNode, nextVNode, container) {
+  // 如果新旧 VNode 描述的是不同的标签，则调用 replaceVNode 函数，使用新的 VNode 替换旧的 VNode
+  if (prevVNode.tag !== nextVNode.tag) {
+    replaceVNode(prevVNode, nextVNode, container)
+    return
+  }
+
+  // 拿到 el 元素，注意这时要让 nextVNode.el 也引用该元素
+  const el = (nextVNode.el = prevVNode.el)
+  const prevData = prevVNode.data
+  const nextData = nextVNode.data
+
+  if (nextData) {
+    // 遍历新的 VNodeData，将旧值和新值都传递给 patchData 函数
+    for (let key in nextData) {
+      const prevValue = prevData[key]
+      const nextValue = nextData[key]
+      patchData(el, key, prevValue, nextValue)
+    }
+  }
+  if (prevData) {
+    // 遍历旧的 VNodeData，将已经不存在于新的 VNodeData 中的数据移除
+    for (let key in prevData) {
+      const prevValue = prevData[key]
+      if (prevValue && !nextData.hasOwnProperty(key)) {
+        // 第四个参数为 null，代表移除数据
+        patchData(el, key, prevValue, null)
+      }
+    }
+  }
+
+  // 调用 patchChildren 函数递归地更新子节点
+  patchChildren(
+    prevVNode.childFlags, // 旧的 VNode 子节点的类型
+    nextVNode.childFlags, // 新的 VNode 子节点的类型
+    prevVNode.children,   // 旧的 VNode 子节点
+    nextVNode.children,   // 新的 VNode 子节点
+    el                    // 当前标签元素，即这些子节点的父节点
+  )
+}
+```
+
+```js
+function patchChildren(
+  prevChildFlags,
+  nextChildFlags,
+  prevChildren,
+  nextChildren,
+  container
+) {
+  switch (prevChildFlags) {
+    case ChildrenFlags.SINGLE_VNODE:
+      switch (nextChildFlags) {
+        case ChildrenFlags.SINGLE_VNODE:
+          // 此时 prevChildren 和 nextChildren 都是 VNode 对象
+          patch(prevChildren, nextChildren, container)
+          break
+        case ChildrenFlags.NO_CHILDREN:
+          // 新的 children 中没有子节点时，会执行该 case 语句块
+          break
+        default:
+          // 新的 children 中有多个子节点时，会执行该 case 语句块
+          break
+      }
+      break
+
+    // 省略...
+  }
+}
+```
+
+想办法把已经渲染好了的 DOM 元素从页面上移除。
+
+```js
+function patchChildren(
+  prevChildFlags,
+  nextChildFlags,
+  prevChildren,
+  nextChildren,
+  container
+) {
+  switch (prevChildFlags) {
+    // 旧的 children 是单个子节点，会执行该 case 语句块
+    case ChildrenFlags.SINGLE_VNODE:
+      switch (nextChildFlags) {
+        case ChildrenFlags.SINGLE_VNODE:
+          // 新的 children 也是单个子节点时，会执行该 case 语句块
+          patch(prevChildren, nextChildren, container)
+          break
+        case ChildrenFlags.NO_CHILDREN:
+          // 新的 children 中没有子节点时，会执行该 case 语句块
+          container.removeChild(prevChildren.el)
+          break
+        default:
+          // 新的 children 中有多个子节点时，会执行该 case 语句块
+          break
+      }
+      break
+
+    // 省略...
+  }
+}
+```
+
+将旧的单个子节点移除，再将新的多个子节点挂载上去
+
+```js
+function patchChildren(
+  prevChildFlags,
+  nextChildFlags,
+  prevChildren,
+  nextChildren,
+  container
+) {
+  switch (prevChildFlags) {
+    // 旧的 children 是单个子节点，会执行该 case 语句块
+    case ChildrenFlags.SINGLE_VNODE:
+      switch (nextChildFlags) {
+        case ChildrenFlags.SINGLE_VNODE:
+          patch(prevChildren, nextChildren, container)
+          break
+        case ChildrenFlags.NO_CHILDREN:
+          container.removeChild(prevChildren.el)
+          break
+        default:
+          // 移除旧的单个子节点
+          container.removeChild(prevChildren.el)
+          // 遍历新的多个子节点，逐个挂载到容器中
+          for (let i = 0; i < nextChildren.length; i++) {
+            mount(nextChildren[i], container)
+          }
+          break
+      }
+      break
+
+    // 省略...
+  }
+}
+```
+
+
+情况一：有多个旧的子节点，但新的子节点是单个子节点，这时只需要把所有旧的子节点移除，再将新的单个子节点添加到容器元素即可。
+情况二：有多个旧的子节点，但没有新的子节点，这时只需要把所有旧的子节点移除即可。
+情况三：新旧子节点都是多个子节点，这时将进入到至关重要的一步，即核心 diff 算法的用武之地。
+
+```js
+function patchChildren(
+  prevChildFlags,
+  nextChildFlags,
+  prevChildren,
+  nextChildren,
+  container
+) {
+  switch (prevChildFlags) {
+    // 省略...
+
+    // 旧的 children 中有多个子节点时，会执行该 case 语句块
+    default:
+      switch (nextChildFlags) {
+        case ChildrenFlags.SINGLE_VNODE:
+          for (let i = 0; i < prevChildren.length; i++) {
+            container.removeChild(prevChildren[i].el)
+          }
+          mount(nextChildren, container)
+          break
+        case ChildrenFlags.NO_CHILDREN:
+          for (let i = 0; i < prevChildren.length; i++) {
+            container.removeChild(prevChildren[i].el)
+          }
+          break
+        default:
+          // 遍历旧的子节点，将其全部移除
+          for (let i = 0; i < prevChildren.length; i++) {
+            container.removeChild(prevChildren[i].el)
+          }
+          // 遍历新的子节点，将其全部添加
+          for (let i = 0; i < nextChildren.length; i++) {
+            mount(nextChildren[i], container)
+          }
+          break
+      }
+      break
+  }
+}
+```
+
+真正的核心 diff 算法我们将会在下一章统一着重讲解，简化版本的实现如上。
+
+
+## 更新文本节点
+
+```js
+// 创建一个文本节点
+const textEl = document.createTextNode('a')
+textEl.nodeValue  // 'a'
+textEl.nodeValue = 'b'
+textEl.nodeValue  // 'b'
+```
+
+```js
+function patchText(prevVNode, nextVNode) {
+  // 拿到文本元素 el，同时让 nextVNode.el 指向该文本元素
+  const el = (nextVNode.el = prevVNode.el)
+  // 只有当新旧文本内容不一致时才有必要更新
+  if (nextVNode.children !== prevVNode.children) {
+    el.nodeValue = nextVNode.children
+  }
+}
+```
+
+
+## 更新 Fragment
+
+片段的更新是简化版的标签元素的更新
+
+```js
+function patchFragment(prevVNode, nextVNode, container) {
+  // 直接调用 patchChildren 函数更新 新旧片段的子节点即可
+  patchChildren(
+    prevVNode.childFlags, // 旧片段的子节点类型
+    nextVNode.childFlags, // 新片段的子节点类型
+    prevVNode.children,   // 旧片段的子节点
+    nextVNode.children,   // 新片段的子节点
+    container
+  )
+
+  switch (nextVNode.childFlags) {
+    case ChildrenFlags.SINGLE_VNODE:
+      nextVNode.el = nextVNode.children.el
+      break
+    case ChildrenFlags.NO_CHILDREN:
+      nextVNode.el = prevVNode.el
+      break
+    default:
+      nextVNode.el = nextVNode.children[0].el
+  }
+}
+```
+
+
+## 更新 Portal
+
+不严谨但很直观的比喻：可以把 Portal 当作可以到处挂载的 Fragment。
+
+```js
+function patchPortal(prevVNode, nextVNode) {
+  patchChildren(
+    prevVNode.childFlags,
+    nextVNode.childFlags,
+    prevVNode.children,
+    nextVNode.children,
+    prevVNode.tag // 注意 container 是旧的 container
+  )
+  // 让 nextVNode.el 指向 prevVNode.el
+  nextVNode.el = prevVNode.el
+
+  // 如果新旧容器不同，才需要搬运
+  if (nextVNode.tag !== prevVNode.tag) {
+    // 获取新的容器元素，即挂载目标
+    const container =
+      typeof nextVNode.tag === 'string'
+        ? document.querySelector(nextVNode.tag)
+        : nextVNode.tag
+
+    switch (nextVNode.childFlags) {
+      case ChildrenFlags.SINGLE_VNODE:
+        // 如果新的 Portal 是单个子节点，就把该节点搬运到新容器中
+        container.appendChild(nextVNode.children.el)
+        break
+      case ChildrenFlags.NO_CHILDREN:
+        // 新的 Portal 没有子节点，不需要搬运
+        break
+      default:
+        // 如果新的 Portal 是多个子节点，遍历逐个将它们搬运到新容器中
+        for (let i = 0; i < nextVNode.children.length; i++) {
+          container.appendChild(nextVNode.children[i].el)
+        }
+        break
+    }
+  }
+}
+```
+
+
+## 有状态组件的更新
+
+有状态组件来说它的更新方式有两种：主动更新 和 被动更新。
+
+所谓主动更新指的是组件自身的状态发生变化所导致的更新，它除了自身状态之外，很可能还包含从父组件传递进来的外部状态(props)，所以父组件自身状态的变化很可能引起子组件外部状态的变化，此时就需要更新子组件，像这种因为外部状态变化而导致的组件更新就叫做被动更新。
+
+### 主动更新
+
+数据变化之后需要重新执行渲染函数，得到新的 VNode。
+
+组件挂载的核心步骤分为三步：1、创建组件实例，2、调用组件的 render 获得 VNode，3、将 VNode 挂载到容器元素。
+
+```js
+function mountStatefulComponent(vnode, container, isSVG) {
+  // 创建组件实例
+  const instance = new vnode.tag()
+
+  instance._update = function() {
+    // 如果 instance._mounted 为真，说明组件已挂载，应该执行更新操作
+    if (instance._mounted) {
+      // 1、拿到旧的 VNode
+      const prevVNode = instance.$vnode
+      // 2、重渲染新的 VNode
+      const nextVNode = (instance.$vnode = instance.render())
+      // 3、patch 更新
+      patch(prevVNode, nextVNode, prevVNode.el.parentNode)
+      // 4、更新 vnode.el 和 $el
+      instance.$el = vnode.el = instance.$vnode.el
+    } else {
+      // 1、渲染VNode
+      instance.$vnode = instance.render()
+      // 2、挂载
+      mount(instance.$vnode, container, isSVG)
+      // 3、组件已挂载的标识
+      instance._mounted = true
+      // 4、el 属性值 和 组件实例的 $el 属性都引用组件的根DOM元素
+      instance.$el = vnode.el = instance.$vnode.el
+      // 5、调用 mounted 钩子
+      instance.mounted && instance.mounted()
+    }
+  }
+
+  instance._update()
+}
+```
+
+
+### 初步了解组件的外部状态 props
+
+组件的被动更新是由组件的外部状态变化所导致的，而 props 就是组件的外部状态。
+
+```js
+function mountStatefulComponent(vnode, container, isSVG) {
+  // 创建组件实例
+  const instance = (vnode.children = new vnode.tag())
+  // 初始化 props
+  instance.$props = vnode.data
+
+  // 省略...
+}
+```
+
+
+### 被动更新
+
+被动更新指的是由外部状态变化而引起的更新操作，通常父组件自身状态的变化可能会引起子组件的更新。
+
+```js
+// 子组件类
+class ChildComponent {
+  render() {
+    // 子组件中访问外部状态：this.$props.text
+    return h('div', null, this.$props.text)
+  }
+}
+// 父组件类
+class ParentComponent {
+  localState = 'one'
+
+  mounted() {
+    // 两秒钟后将 localState 的值修改为 'two'
+    setTimeout(() => {
+      this.localState = 'two'
+      this._update()
+    }, 2000)
+  }
+
+  render() {
+    return h(ChildComponent, {
+      // 父组件向子组件传递的 props
+      text: this.localState
+    })
+  }
+}
+
+// 有状态组件 VNode
+const compVNode = h(ParentComponent)
+render(compVNode, document.getElementById('app'))
+```
+
+```js
+function patchComponent(prevVNode, nextVNode, container) {
+  // 检查组件是否是有状态组件
+  if (nextVNode.flags & VNodeFlags.COMPONENT_STATEFUL_NORMAL) {
+    // 1、获取组件实例
+    const instance = (nextVNode.children = prevVNode.children)
+    // 2、更新 props
+    instance.$props = nextVNode.data
+    // 3、更新组件
+    instance._update()
+  }
+}
+```
+
+
+## 函数式组件的更新
+
+```js
+function mountFunctionalComponent(vnode, container, isSVG) {
+  vnode.handle = {
+    prev: null,
+    next: vnode,
+    container,
+    update: () => {
+      if (vnode.handle.prev) {
+        // 更新
+        // prevVNode 是旧的组件VNode，nextVNode 是新的组件VNode
+        const prevVNode = vnode.handle.prev
+        const nextVNode = vnode.handle.next
+        // prevTree 是组件产出的旧的 VNode
+        const prevTree = prevVNode.children
+        // 更新 props 数据
+        const props = nextVNode.data
+        // nextTree 是组件产出的新的 VNode
+        const nextTree = (nextVNode.children = nextVNode.tag(props))
+        // 调用 patch 函数更新
+        patch(prevTree, nextTree, vnode.handle.container)
+      } else {
+        // 获取 props
+        const props = vnode.data
+        // 获取 VNode
+        const $vnode = (vnode.children = vnode.tag(props))
+        // 挂载
+        mount($vnode, container, isSVG)
+        // el 元素引用该组件的根元素
+        vnode.el = $vnode.el
+      }
+    }
+  }
+
+  // 立即调用 vnode.handle.update 完成初次挂载
+  vnode.handle.update()
+}
+```
+
+```js
+function patchComponent(prevVNode, nextVNode, container) {
+  if (nextVNode.tag !== prevVNode.tag) {
+    replaceVNode(prevVNode, nextVNode, container)
+  } else if (nextVNode.flags & VNodeFlags.COMPONENT_STATEFUL_NORMAL) {
+    // 省略...
+  } else {
+    // 更新函数式组件
+    // 通过 prevVNode.handle 拿到 handle 对象
+    const handle = (nextVNode.handle = prevVNode.handle)
+    // 更新 handle 对象
+    handle.prev = prevVNode
+    handle.next = nextVNode
+    handle.container = container
+
+    // 调用 update 函数完成更新
+    handle.update()
+  }
+}
+```

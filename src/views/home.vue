@@ -18,7 +18,6 @@
             @click="pageCurrentChange(item)") {{item}}
 
     .right-anchor
-        .right-anchor-ink 
         .right-anchor-link(
             v-for="(item, index) in anchorActived"
             :key="index"

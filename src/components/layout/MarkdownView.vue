@@ -2,7 +2,6 @@
 .post-box
     router-view.router-post-body
     .right-anchor
-        .right-anchor-ink 
         .right-anchor-link(
             v-for="(item, index) in anchor"
             :key="index"
