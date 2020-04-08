@@ -2272,7 +2272,9 @@ Diff 算法，其重点无非就是：判断是否有节点需要移动，以及
 
 ### DOM 移动的方式
 
-1、判断出是否需要进行 DOM 移动操作，所以我们建立了 moved 变量作为标识，当它的值为 true 时则说明需要进行 DOM 移动；2、构建 source 数组，它的长度与“去掉”相同的前置/后置节点后新 children 中剩余未处理节点的数量相等，并存储着新 children 中的节点在旧 children 中位置，后面我们会根据 source 数组计算出一个最长递增子序列，并用于 DOM 移动操作。
+1、判断出是否需要进行 DOM 移动操作，所以我们建立了 moved 变量作为标识，当它的值为 true 时则说明需要进行 DOM 移动。
+
+2、构建 source 数组，它的长度与“去掉”相同的前置/后置节点后新 children 中剩余未处理节点的数量相等，并存储着新 children 中的节点在旧 children 中位置，后面我们会根据 source 数组计算出一个最长递增子序列，并用于 DOM 移动操作。
 
 ```js
 if (moved) {
@@ -2321,3 +2323,196 @@ if (moved) {
   }
 }
 ```
+
+
+---
+
+
+# 自定义渲染器和异步渲染
+
+## 自定义渲染器的原理
+
+渲染器是围绕 Virtual DOM 而存在的，在 Web 平台下它能够把 Virtual DOM 渲染为浏览器中的真实 DOM 对象，通过前面几章的讲解，相信你已经能够认识到渲染器的实现原理，为了能够将 Virtual DOM 渲染为真实 DOM，渲染器内部需要调用浏览器提供的 DOM 编程接口，下面罗列了在出上一章中我们曾经使用到的那些浏览器为我们提供的 DOM 编程接口：
+
+- document.createElement / createElementNS：创建标签元素。
+- document.createTextNode：创建文本元素。
+- el.nodeValue：修改文本元素的内容。
+- el.removeChild：移除 DOM 元素。
+- el.insertBefore：插入 DOM 元素。
+- el.appendChild：追加 DOM 元素。
+- el.parentNode：获取父元素。
+- el.nextSibling：获取下一个兄弟元素。
+- document.querySelector：挂载 Portal 类型的 VNode 时，用它查找挂载点。
+
+这些 DOM 编程接口完成了 Web 平台(或者说浏览器)下对 DOM 的增加、删除、查找的工作，它是 Web 平台独有的，所以如果渲染器自身强依赖于这些方法(函数)，那么这个渲染器也只能够运行在浏览器中，它不具备跨平台的能力。换句话说，如果想要实现一个平台无关的渲染器，那么渲染器自身必须不能强依赖于任何一个平台下特有的接口，而是应该提供一个抽象层，将 “DOM” 的增加、删除、查找等操作使用抽象接口实现，具体到某个平台下时，由开发者决定如何使用该平台下的接口实现这个抽象层，这就是自定义渲染器的本质。
+
+一个跨平台的渲染器应该至少包含两个可自定义的部分：可自定义元素的增加、删除、查找等操作、可自定义元素自身属性/特性的修改操作。这样对于任何一个元素来说，它的增删改查都已经变成了可自定义的部分，我们只需要“告知”渲染器在对元素进行增删改查时应该做哪些具体的操作即可。
+
+整个 render.js 文件的核心代码
+```js
+// 导出渲染器
+export default function render(vnode, container) { /* ... */ }
+
+// ========== 挂载 ==========
+
+function mount(vnode, container, isSVG, refNode) { /* ... */ }
+
+function mountElement(vnode, container, isSVG, refNode) { /* ... */ }
+
+function mountText(vnode, container) { /* ... */ }
+
+function mountFragment(vnode, container, isSVG) { /* ... */ }
+
+function mountPortal(vnode, container) { /* ... */ }
+
+function mountComponent(vnode, container, isSVG) { /* ... */ }
+
+function mountStatefulComponent(vnode, container, isSVG) { /* ... */ }
+
+function mountFunctionalComponent(vnode, container, isSVG) { /* ... */ }
+
+// ========== patch ==========
+
+function patch(prevVNode, nextVNode, container) { /* ... */ }
+
+function replaceVNode(prevVNode, nextVNode, container) { /* ... */ }
+
+function patchElement(prevVNode, nextVNode, container) { /* ... */ }
+
+function patchChildren(
+  prevChildFlags,
+  nextChildFlags,
+  prevChildren,
+  nextChildren,
+  container
+) { /* ... */ }
+
+function patchText(prevVNode, nextVNode) { /* ... */ }
+
+function patchFragment(prevVNode, nextVNode, container) { /* ... */ }
+
+function patchPortal(prevVNode, nextVNode) { /* ... */ }
+
+function patchComponent(prevVNode, nextVNode, container) { /* ... */ }
+
+// https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+function lis(arr) { /* ... */ }
+```
+
+在 mount 和 patch 中都会调用浏览器提供的 DOM 编程接口来完成真正的渲染工作。
+
+```js
+export default function createRenderer(options) {
+  // options.nodeOps 选项中包含了本章开头罗列的所有操作 DOM 的方法
+  // options.patchData 选项就是 patchData 函数
+  const {
+    nodeOps: {
+      createElement: platformCreateElement,
+      createText: platformCreateText,
+      setText: platformSetText, // 等价于 Web 平台的 el.nodeValue
+      appendChild: platformAppendChild,
+      insertBefore: platformInsertBefore,
+      removeChild: platformRemoveChild,
+      parentNode: platformParentNode,
+      nextSibling: platformNextSibling,
+      querySelector: platformQuerySelector
+    },
+    patchData: platformPatchData
+  } = options
+
+  function render(vnode, container) { /* ... */ }
+
+  // ========== 挂载 ==========
+  // 省略...
+
+  // ========== patch ==========
+  // 省略...
+
+  return { render }
+}
+```
+
+接下来我们要做的就是将渲染器中原本使用了 Web 平台进行 DOM 操作的地方修改成使用通过解构得到的函数进行替代，例如在创建 DOM 元素时，原来的实现如下：
+
+```js
+function mountElement(vnode, container, isSVG, refNode) {
+  isSVG = isSVG || vnode.flags & VNodeFlags.ELEMENT_SVG
+  const el = isSVG
+    ? document.createElementNS('http://www.w3.org/2000/svg', vnode.tag)
+    : document.createElement(vnode.tag)
+  // 省略...
+}
+```
+
+现在我们应该使用 platformCreateElement 函数替代 document.createElement(NS)：
+
+```js
+function mountElement(vnode, container, isSVG, refNode) {
+  isSVG = isSVG || vnode.flags & VNodeFlags.ELEMENT_SVG
+  const el = platformCreateElement(vnode.tag, isSVG)
+  // 省略...
+}
+```
+
+
+当我们实现了所有 nodeOps 下的规定的抽象接口之后，实际上就完成了一个面向 Web 平台的渲染器，如下代码所示：
+
+```js
+const { render } = createRenderer({
+  nodeOps: {
+    createElement(tag, isSVG) {
+      return isSVG
+        ? document.createElementNS('http://www.w3.org/2000/svg', tag)
+        : document.createElement(tag)
+    },
+    removeChild(parent, child) {
+      parent.removeChild(child)
+    },
+    createText(text) {
+      return document.createTextNode(text)
+    },
+    setText(node, text) {
+      node.nodeValue = text
+    },
+    appendChild(parent, child) {
+      parent.appendChild(child)
+    },
+    insertBefore(parent, child, ref) {
+      parent.insertBefore(child, ref)
+    },
+    parentNode(node) {
+      return node.parentNode
+    },
+    nextSibling(node) {
+      return node.nextSibling
+    },
+    querySelector(selector) {
+      return document.querySelector(selector)
+    }
+  }
+})
+```
+
+```js
+import { patchData } from './patchData'
+const { render } = createRenderer({
+  nodeOps: {
+    // 省略...
+  },
+  patchData
+})
+```
+
+以上我们就完成了对渲染器的抽象，使它成为一个平台无关的工具。并基于此实现了一个 Web 平台的渲染器，专门用于浏览器环境。
+
+
+## 自定义渲染器的应用
+
+Vue3 提供了一个叫做 @vue/runtime-test 的包，其作用是方便开发者在无 DOM 环境时有能力对组件的渲染内容进行测试，这实际上就是对自定义渲染器的应用。本节我们尝试来实现与 @vue/runtime-test 具有相同功能的渲染器。
+
+
+---
+
+
+<a href="http://hcysun.me/vue-design/zh/essence-of-comp.html" target="_blank">→ 此文章为学习总结文档，感谢原作者！</a>
+
