@@ -88,7 +88,7 @@ export default {
     font-size: 1.6rem;
     color: $theme-light-color;
     line-height: 1.4;
-    padding: 0 25%;
+    padding: 0 20%;
     margin-top: 2rem;
     box-sizing: border-box;
 

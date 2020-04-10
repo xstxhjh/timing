@@ -9,7 +9,7 @@
             .post-body-content(v-html="item.description")
             .post-body-button(@click="goToPost(item.routeName)") 阅读全文 »
             
-    .end-pagination(:style="$parent.navIconOpen?'':'left:10rem;'")
+    .end-pagination(:style="$parent.navIconOpen?'':'left: 1rem;'")
         .end-pagination-title 页
         .end-pagination-item(
             :class="{'pagination-item-actived': item == pageCurrent}"
@@ -153,7 +153,7 @@ export default {
 }
 
 .posts-expand {
-    width: 60%;
+    width: 80%;
     padding-top: 4rem;
 }
 
