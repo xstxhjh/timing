@@ -31,7 +31,7 @@ function beforeFn() {
             routeName: item.match(/(\S*)\./)[1],
             fileContent: str,
             timeDate: timeDate,
-            wordCount: fileSync.length
+            wordCount: fileSync.length - str.length
         })
     })
     mdArr.sort(compare('timeDate'))
