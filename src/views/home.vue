@@ -247,7 +247,7 @@ export default {
     justify-content: center;
     position: fixed;
     left: 28rem;
-    transition: left 0.2s ease;
+    transition: all 0.34s ease;
     .end-pagination-title {
         font-size: 1.9rem;
         font-weight: bold;

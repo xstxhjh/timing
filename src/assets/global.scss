@@ -34,7 +34,7 @@
 // 锚点
 .right-anchor {
     font-size: 1.2rem;
-    min-width: 22rem;
+    min-width: 20rem;
     max-height: calc(100vh - 25rem);
     display: flex;
     flex-direction: column;
@@ -45,6 +45,7 @@
     background: #fff;
     border-radius: 0.4rem;
     overflow-y: auto;
+
     .right-anchor-link {
         margin-left: 1rem;
         padding: 0.7rem 1rem 0.7rem 1.6rem;
@@ -56,6 +57,10 @@
         :nth-child(2).right-anchor-link {
             margin-top: 0.7rem;
         }
+    }
+
+    .right-anchor-link .right-anchor-link{
+        padding: 0.3rem;
     }
 
     & > .right-anchor-link::after {

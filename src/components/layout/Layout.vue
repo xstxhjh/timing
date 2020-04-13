@@ -67,11 +67,11 @@ export default {
                         minWidth: '0',
                     })
                 } else {
-                    TweenMax.to('.box-left', 0.2, {
+                    TweenMax.to('.box-left', 0.4, {
                         width: '32rem',
                         minWidth: '20rem',
                     })
-                    TweenMax.to('.avatar', 0.2, {
+                    TweenMax.to('.avatar', 0.4, {
                         opacity: 1
                     })
                 }
