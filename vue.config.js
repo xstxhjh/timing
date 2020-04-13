@@ -9,10 +9,11 @@ function resolve(dir) {
 
 // markdown-it plugin
 var markdown = require('markdown-it')({
-    html: true,
-    breaks: true,
-    typographer: true,
-    linkify: true
+    html: true,         // 在源码中启用 HTML 标签
+    breaks: true,       // 转换段落里的 '\n' 到 <br>。
+    typographer: true,  // 启用一些语言中立的替换 + 引号美化
+    linkify: true,       // 将类似 URL 的文本自动转换为链接。
+    langPrefix:   'language-',  // 给围栏代码块的 CSS 语言前缀。对于额外的高亮代码非常有用。
 })
 
 // 处理md文件
@@ -26,7 +27,7 @@ module.exports = {
     productionSourceMap: false,
     configureWebpack: config => {
         config.externals = {
-            // cdn 加速
+            // cdn 加速移除包
             vue: 'Vue',
             vuex: 'Vuex',
             axios: 'axios',

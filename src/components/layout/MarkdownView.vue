@@ -17,7 +17,8 @@
 
 <script>
 hljs.highlightCode = function () {
-    //自定义highlightCode方法，将只执行一次的逻辑去掉
+    // 在 $route 改变进行跳转时，vue 会重新渲染页面，并移除页面上所有事件。
+    // 所以在渲染页面后，监听已经被移除了，也就不会再进行语法高亮了。
     let blocks = document.querySelectorAll('pre code')
     ![].forEach.call(blocks, hljs.highlightBlock)
 }

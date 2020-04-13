@@ -36,7 +36,7 @@ export default {
             })
           } else {
             this.categories.map(cItem => {
-              if (item.categories == cItem.title) {
+              if (cItem.children && item.categories == cItem.title) {
                 cItem.children.push(item)
               }
             })
