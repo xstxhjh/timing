@@ -1,5 +1,5 @@
 [title]: # (NestJS)
-[date]: # (2019-11-02 &nbsp; 19:22:05)
+[date]: # (2020-01-25 &nbsp; 19:22:05)
 [categories]: # (Typescript)
 [description]: # (NestJS是用于构建高效，可扩展的Node.js服务器端应用程序的框架。<br>渐进式JavaScript，内置并完全支持TypeScript。<br>结合了OOP（面向对象编程），FP（函数式编程）和FRP（函数响应式编程）。)
 [image]: # (https://i.loli.net/2020/04/10/YbNBVixDGlqoULe.png)
@@ -370,4 +370,100 @@ export class CatsController {
 ```
 
 CatsService 是通过类构造函数注入的。注意这里使用了私有的只读语法。这意味着我们已经在同一位置创建并初始化了 catsService 成员。
+
+## 依赖注入
+
+Nest 是建立在一种强大的设计模式之上的, 我们通常称之为依赖注入。我们建议在官方的 Angular文档中阅读有关此概念的精彩文章。
+
+依赖注入（DI）是一种重要的应用设计模式。在设计应用时常会用到它，以提升它们的开发效率和模块化程度。
+依赖，是当类需要执行其功能时，所需要的服务或对象。 DI 是一种编码模式，其中的类会从外部源中请求获取依赖，而不是自己创建它们。
+
+在 Nest 中，借助 TypeScript 功能，管理依赖项非常容易，因为它们仅按类型进行解析。在下面的示例中，Nest 将 catsService 通过创建并返回一个实例来解析 CatsService（或者，在单例的正常情况下，如果现有实例已在其他地方请求，则返回现有实例）。解析此依赖关系并将其传递给控制器的构造函数（或分配给指定的属性）：
+
+```javascript
+constructor(private readonly catsService: CatsService) {}
+```
+
+## 作用域
+
+Provider通常具有与应用程序生命周期同步的生命周期（“作用域”）。在启动应用程序时，必须解析每个依赖项，因此必须实例化每个提供程序。同样，当应用程序关闭时，每个provider都将被销毁。但是，有一些方法可以该标provider生命周期的请求范围。
+
+
+## 定制providers
+
+Nest 有一个内置的控制反转（"IoC"）容器，可以解决providers之间的关系。 此功能是上述依赖注入功能的基础，但要比上面描述的要强大得多。@Injectable() 装饰器只是冰山一角, 并不是定义 providers 的唯一方法。相反，您可以使用普通值、类、异步或同步工厂。
+
+## 可选的providers
+
+有时，您可能需要解决一些依赖项。例如，您的类可能依赖于一个配置对象，但如果没有传递，则应使用默认值。在这种情况下，关联变为可选的，provider 不会因为缺少配置导致错误。
+
+要指示provider是可选的，请在 constructor 的参数中使用 @optional() 装饰器。
+
+```javascript
+import { Injectable, Optional, Inject } from '@nestjs/common';
+
+@Injectable()
+export class HttpService<T> {
+  constructor(
+    @Optional() @Inject('HTTP_OPTIONS') private readonly httpClient: T
+  ) {}
+}
+```
+
+请注意，在上面的示例中，我们使用自定义 provider，这是我们包含 HTTP_OPTIONS自定义标记的原因。前面的示例显示了基于构造函数的注入，通过构造函数中的类指示依赖关系。
+
+## 基于属性的注入
+
+我们目前使用的技术称为基于构造函数的注入，即通过构造函数方法注入providers。在某些非常特殊的情况下，基于属性的注入可能会有用。例如，如果顶级类依赖于一个或多个 providers，那么通过从构造函数中调用子类中的 super() 来传递它们就会非常烦人了。因此，为了避免出现这种情况，可以在属性上使用 @inject() 装饰器。
+
+```javascript
+import { Injectable, Inject } from '@nestjs/common';
+
+@Injectable()
+export class HttpService<T> {
+  @Inject('HTTP_OPTIONS')
+  private readonly httpClient: T;
+}
+
+// 如果您的类没有扩展其他provider，你应该总是使用基于构造函数的注入。
+```
+
+## 注册 provider
+
+现在我们已经定义了 provider（CatsService），并且已经有了该服务的使用者（CatsController），我们需要在 Nest 中注册该服务，以便它可以执行注入。 为此，我们可以编辑模块文件（app.module.ts），然后将服务添加到@Module()装饰器的 providers 数组中。
+
+```javascript
+// app.module.ts
+
+import { Module } from '@nestjs/common';
+import { CatsController } from './cats/cats.controller';
+import { CatsService } from './cats/cats.service';
+
+@Module({
+  controllers: [CatsController],
+  providers: [CatsService],
+})
+export class AppModule {}
+```
+
+
+---
+
+
+# 模块
+
+模块是具有 @Module() 装饰器的类。 @Module() 装饰器提供了元数据，Nest 用它来组织应用程序结构。
+
+每个 Nest 应用程序至少有一个模块，即根模块。根模块是 Nest 开始安排应用程序树的地方。事实上，根模块可能是应用程序中唯一的模块，特别是当应用程序很小时，但是对于大型程序来说这是没有意义的。在大多数情况下，您将拥有多个模块，每个模块都有一组紧密相关的功能。
+
+@module() 装饰器接受一个描述模块属性的对象：
+
+|属性|说明|
+|:-------|:------:|
+|providers | 由 Nest 注入器实例化的提供者，并且可以至少在整个模块中共享
+|controllers | 必须创建的一组控制器
+|imports | 导入模块的列表，这些模块导出了此模块中所需提供者
+|exports | 由本模块提供并应在其他模块中可用的提供者的子集。
+
+默认情况下, 模块封装提供者。这意味着如果提供者即不是当前模块的一部分, 也不是从另外模块(已导入)导出的，那么它就是无法注入的。
 
