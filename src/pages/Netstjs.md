@@ -210,3 +210,29 @@ findOne(@Param('id') id): string {
 
 @Param()用于修饰方法参数（上面示例中的参数），并使路由参数可用作该修饰的方法参数在方法体内的属性。 如上面的代码所示，我们可以通过引用 params.id来访问 id参数。 您还可以将特定的参数标记传递给装饰器，然后在方法主体中按名称直接引用路由参数。
 
+
+## 子域路由
+
+@Controller装饰可以配置host选项，要求进入的请求的HTTP主机相匹配一些特定的值。
+
+```javascript
+@Controller({ host: 'admin.example.com' })
+export class AdminController {
+  @Get()
+  index(): string {
+    return 'Admin page';
+  }
+}
+```
+
+与路由路径类似，该host选项可以捕获动态值，使用@HostParam()装饰器访问以这种方式声明的主机参数，该装饰器应添加到函数签名中。
+
+```javascript
+@Controller({ host: ':account.example.com' })
+export class AccountController {
+  @Get()
+  getInfo(@HostParam('account') account: string) {
+    return account;
+  }
+}
+```
