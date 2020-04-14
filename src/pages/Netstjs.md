@@ -148,6 +148,23 @@ create() {
 
 通常，状态码不是固定的，而是取决于各种因素。在这种情况下，您可以使用类库特有的的响应（通过@Res()注入 ）对象（或者，在出现错误时，抛出异常）。
 
+```javascript
+import { Controller, Get, Post, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
+
+@Controller('cats')
+export class CatsController {
+  @Post()
+  create(@Res() res: Response) {
+    res.status(HttpStatus.CREATED).send();
+  }
+
+  @Get()
+  findAll(@Res() res: Response) {
+     res.status(HttpStatus.OK).json([]);
+  }
+}
+```
 
 ## Headers
 
@@ -234,5 +251,52 @@ export class AccountController {
   getInfo(@HostParam('account') account: string) {
     return account;
   }
+}
+```
+
+
+## 范围
+
+对于来自不同编程语言背景的人来说，了解在 Nest 中几乎所有内容都可以在传入的请求之间共享，这让人意外。比如我们有一个数据库连接池，具有全局状态的单例服务等。请记住，Node.js 不遵循请求/响应多线程无状态模型，每个请求都由主线程处理。因此，使用单例实例对我们的应用程序来说是完全安全的。
+
+
+## Async / await
+
+```javascript
+@Get()
+async findAll(): Promise<any[]> {
+  return [];
+}
+```
+
+这是完全有效的。此外,通过返回 RxJS observable 流。 Nest 路由处理程序更强大。Nest 将自动订阅下面的源并获取最后发出的值（在流完成后）。
+
+```javascript
+@Get()
+findAll(): Observable<any[]> {
+  return of([]);
+}
+```
+
+
+## 请求负载
+
+之前的 POST 路由处理程序不接受任何客户端参数。我们在这里添加 @Body() 参数来解决这个问题。
+
+首先(如果您使用 TypeScript)，我们需要确定 DTO(数据传输对象)模式。DTO是一个对象，它定义了如何通过网络发送数据。我们可以通过使用 TypeScript接口或简单的类来完成。令人惊讶的是，我们在这里推荐使用类。为什么?类是JavaScript ES6标准的一部分，因此它们在编译后的 JavaScript中保留为实际实体。另一方面，由于 TypeScript接口在转换过程中被删除，所以 Nest不能在运行时引用它们。这一点很重要，因为诸如管道之类的特性在运行时能够访问变量的元类型时提供更多的可能性。
+
+```javascript
+// create-cat.dto.ts
+export class CreateCatDto {
+  readonly name: string;
+  readonly age: number;
+  readonly breed: string;
+}
+
+
+// cats.controller.ts
+@Post()
+async create(@Body() createCatDto: CreateCatDto) {
+  return 'This action adds a new cat';
 }
 ```
