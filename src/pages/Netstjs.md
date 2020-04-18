@@ -743,3 +743,113 @@ export class AppModule implements NestModule {
 
 // 可以使用 async/await来实现 configure()方法的异步化(例如，可以在 configure()方法体中等待异步操作的完成)。
 ```
+
+
+## 路由通配符
+
+路由同样支持模式匹配。例如，星号被用作通配符，将匹配任何字符组合。
+
+```javascript
+forRoutes({ path: 'ab*cd', method: RequestMethod.ALL });
+```
+
+以上路由地址将匹配 abcd 、 ab_cd 、 abecd 等。字符 ? 、 + 、 * 以及 () 是它们的正则表达式对应项的子集。连字符 (-) 和点 (.) 按字符串路径解析。
+
+
+## 中间件消费者
+
+MiddlewareConsumer 是一个帮助类。它提供了几种内置方法来管理中间件。他们都可以被简单地链接起来。forRoutes() 可接受一个字符串、多个字符串、对象、一个控制器类甚至多个控制器类。在大多数情况下，您可能只会传递一个由逗号分隔的控制器列表。以下是单个控制器的示例：
+
+```javascript
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { CatsModule } from './cats/cats.module';
+import { CatsController } from './cats/cats.controller.ts';
+
+@Module({
+  imports: [CatsModule],
+})
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes(CatsController);
+  }
+}
+
+// 该 apply() 方法可以使用单个中间件，也可以使用多个参数来指定多个多个中间件。
+```
+
+我们可能经常希望将某些路由排除在中间件应用之外。当使用类定义中间件时(正如我们到目前为止所做的，而不是使用替代函数式中间件），我们可以使用该 exclude() 方法轻松地排除某些路由。该方法采用一个或多个对象标识要排除的 path 和 method，如下所示：
+
+```javascript
+consumer
+  .apply(LoggerMiddleware)
+  .exclude(
+    { path: 'cats', method: RequestMethod.GET },
+    { path: 'cats', method: RequestMethod.POST }
+  )
+  .forRoutes(CatsController);
+```
+
+通过上面的示例，LoggerMiddleware 将绑定到 CatsController 除了 exclude() 方法的两个内部定义的所有路由。请注意，该 exclude()方法不适用于函数中间件（在函数中而不是在类中定义的中间件;有关更多详细信息，请参阅下文）。此外，此方法不排除来自更通用路由（例如，通配符）的路径。如果您需要这种级别的控制，您应该将路径限制逻辑直接放入中间件，例如，访问请求的 URL以有条件地应用中间件逻辑。
+
+
+## 函数式中间件
+
+我们使用的 LoggerMiddleware 类非常简单。它没有成员，没有额外的方法，没有依赖关系。为什么我们不能只使用一个简单的函数？这是一个很好的问题，因为事实上 - 我们可以做到。这种类型的中间件称为函数式中间件。让我们把 logger 转换成函数。
+
+```javascript
+// logger.middleware.ts
+export function logger(req, res, next) {
+  console.log(`Request...`);
+  next();
+};
+
+
+// 现在在 ApplicationModule 中使用它。
+
+// app.module.ts
+consumer
+  .apply(logger)
+  .forRoutes(CatsController);
+
+//当您的中间件没有任何依赖关系时，我们可以考虑使用函数式中间件。
+```
+
+
+## 多个中间件
+
+如前所述，为了绑定顺序执行的多个中间件，我们可以在 apply() 方法内用逗号分隔它们。
+
+```javascript
+consumer.apply(cors(), helmet(), logger).forRoutes(CatsController);
+```
+
+
+## 全局中间件
+
+如果我们想一次性将中间件绑定到每个注册路由，我们可以使用由INestApplication实例提供的 use()方法：
+
+```javascript
+const app = await NestFactory.create(AppModule);
+app.use(logger);
+await app.listen(3000);
+```
+
+
+---
+
+
+# 异常过滤器
+
+内置的异常层负责处理整个应用程序中的所有抛出的异常。当捕获到未处理的异常时，最终用户将收到友好的响应。
+
+每个发生的异常都由全局异常过滤器处理, 当这个异常无法被识别时 (既不是 HttpException 也不是继承的类 HttpException ) , 用户将收到以下 JSON 响应:
+
+```json
+{
+    "statusCode": 500,
+    "message": "Internal server error"
+}
+```
