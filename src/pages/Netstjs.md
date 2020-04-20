@@ -1163,3 +1163,12 @@ async function bootstrap() {
 }
 bootstrap();
 ```
+
+
+---
+
+
+# 管道
+
+管道是具有 @Injectable() 装饰器的类。管道应实现 PipeTransform 接口。
+
