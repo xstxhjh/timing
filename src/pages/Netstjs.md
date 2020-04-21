@@ -1,4 +1,4 @@
-[title]: # (NestJS)
+[title]: # (NestJS文档整理)
 [date]: # (2020-02-08 &nbsp; 19:22:05)
 [categories]: # (Typescript)
 [description]: # (NestJS是用于构建高效，可扩展的Node.js服务器端应用程序的框架。<br>渐进式JavaScript，内置并完全支持TypeScript。<br>结合了OOP（面向对象编程），FP（函数式编程）和FRP（函数响应式编程）。)
@@ -1253,7 +1253,178 @@ export class CreateCatDto {
 在这种情况下，你应该考虑使用管道。
 
 
-## 对象结构验证
+## 类验证器
 
-有几种方法可以实现，一种常见的方式是使用基于结构的验证。Joi 库是允许您使用一个可读的 API 以非常简单的方式创建 schema，让我们俩试一下基于 Joi 的验证管道。
+让我们看一下验证的另外一种实现方式
 
+Nest 与 class-validator 配合得很好。这个优秀的库允许您使用基于装饰器的验证。装饰器的功能非常强大，尤其是与 Nest 的 Pipe 功能相结合使用时，因为我们可以通过访问 metatype 信息做很多事情，在开始之前需要安装一些依赖。
+
+```shell
+$ npm i --save class-validator class-transformer
+```
+
+安装完成后，我们就可以向 CreateCatDto 类添加一些装饰器。
+
+```javascript
+// create-cat.dto.ts
+
+import { IsString, IsInt } from 'class-validator';
+
+export class CreateCatDto {
+  @IsString()
+  readonly name: string;
+
+  @IsInt()
+  readonly age: number;
+
+  @IsString()
+  readonly breed: string;
+}
+```
+
+现在我们来创建一个 ValidationPipe 类。
+
+```javascript
+// validation.pipe.ts
+
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+import { validate } from 'class-validator';
+import { plainToClass } from 'class-transformer';
+
+@Injectable()
+export class ValidationPipe implements PipeTransform<any> {
+  async transform(value: any, { metatype }: ArgumentMetadata) {
+    if (!metatype || !this.toValidate(metatype)) {
+      return value;
+    }
+    const object = plainToClass(metatype, value);
+    const errors = await validate(object);
+    if (errors.length > 0) {
+      throw new BadRequestException('Validation failed');
+    }
+    return value;
+  }
+
+  private toValidate(metatype: Function): boolean {
+    const types: Function[] = [String, Boolean, Number, Array, Object];
+    return !types.includes(metatype);
+  }
+}
+```
+
+让我们来看看这个代码。首先你会发现 transform() 函数是 异步 的, Nest 支持同步和异步管道。这样做的原因是因为有些 class-validator 的验证是可以异步的(Promise)
+
+接下来请注意，我们正在使用解构赋值（从 ArgumentMetadata 中提取参数）到方法中。这是一个先获取全部 ArgumentMetadata 然后用附加语句提取某个变量的简写方式。
+
+下一步，请观察 toValidate() 方法。当验证类型不是 JavaScript 的数据类型时，跳过验证。
+
+下一步，我们使用 class-transformer 的 plainToClass() 方法来转换 JavaScript 的参数为可验证的类型对象。一个请求中的 body 数据是不包行类型信息的，Class-validator 需要使用前面定义过的 DTO，就需要做一个类型转换。
+
+最后，如前所述，这就是一个验证管道，它要么返回值不变，要么抛出异常。
+
+最后一步是设置 ValidationPipe 。管道，与异常过滤器相同，它们可以是方法范围的、控制器范围的和全局范围的。另外，管道可以是参数范围的。我们可以直接将管道实例绑定到路由参数装饰器，例如@Body()。让我们来看看下面的例子：
+
+```javascript
+// cats.controler.ts
+
+@Post()
+@UsePipes(ValidationPipe)
+async create(@Body() createCatDto: CreateCatDto) {
+  this.catsService.create(createCatDto);
+}
+```
+
+由于 ValidationPipe 被创建为尽可能通用，所以我们将把它设置为一个全局作用域的管道，用于整个应用程序中的每个路由处理器。
+
+```javascript
+// main.ts
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe());
+  await app.listen(3000);
+}
+bootstrap();
+
+// 在 混合应用中 useGlobalPipes() 方法不会为网关和微服务设置管道, 对于标准(非混合) 微服务应用使用 useGlobalPipes() 全局设置管道。
+```
+
+全局管道用于整个应用程序、每个控制器和每个路由处理程序。就依赖注入而言，从任何模块外部注册的全局管道（如上例所示）无法注入依赖，因为它们不属于任何模块。为了解决这个问题，可以使用以下构造直接为任何模块设置管道：
+
+```javascript
+// app.module.ts
+
+import { Module } from '@nestjs/common';
+import { APP_PIPE } from '@nestjs/core';
+
+@Module({
+  providers: [
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe
+    }
+  ]
+})
+export class AppModule {}
+```
+
+
+## 转换管道
+
+验证不是管道唯一的用处。在本章的开始部分，我已经提到管道也可以将输入数据转换为所需的输出。这是可以的，因为从 transform 函数返回的值完全覆盖了参数先前的值。在什么时候使用？有时从客户端传来的数据需要经过一些修改（例如字符串转化为整数），然后处理函数才能正确的处理。还有种情况，比如有些数据具有默认值，用户不必传递带默认值参数，一旦用户不穿就使用默认值。转换管道被插入在客户端请求和请求处理程序之间用来处理客户端请求。
+
+```javascript
+// parse-int.pipe.ts
+
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+
+@Injectable()
+export class ParseIntPipe implements PipeTransform<string, number> {
+  transform(value: string, metadata: ArgumentMetadata): number {
+    const val = parseInt(value, 10);
+    if (isNaN(val)) {
+      throw new BadRequestException('Validation failed');
+    }
+    return val;
+  }
+}
+
+// 如下所示, 我们可以很简单的配置管道来处理所参数 id:
+
+@Get(':id')
+async findOne(@Param('id', new ParseIntPipe()) id) {
+  return await this.catsService.findOne(id);
+}
+```
+
+## 内置验证管道
+
+幸运的是，由于 ValidationPipe 和 ParseIntPipe 是内置管道，因此您不必自己构建这些管道（请记住， ValidationPipe 需要同时安装 class-validator 和 class-transformer 包）。
+
+内置的 ValidationPipe 提供了比本章描述的更多的选项，为了简单和减少学习曲线，这些选项一直保持基本。你可以在这里查看很多例子。
+
+另一个选项是转换，回想一下前面提到过的反序列化 body 数据没有验证类型（DTO 定义）。到目前为止我们已经使用管道来验证数据，你可能还记得在这个过程中，我们用class-transform把普通对象转换为 DTO 可验证对象来进行验证。内置的 ValidationPipe 也可以返回转换后的对象，该对象 transform 的值为 true，如下所示：
+
+```javascript
+// cats.controller.ts
+
+@Post()
+@UsePipes(new ValidationPipe({ transform: true }))
+async create(@Body() createCatDto: CreateCatDto) {
+  this.catsService.create(createCatDto);
+}
+
+// ValidationPipe 是从 @nestjs/common 包中导入的。
+```
+
+因为这个管道是基于 class-validator 和 class-transformer 库的，所以有很多选项可配置。选项如下：
+
+```javascript
+export interface ValidationPipeOptions extends ValidatorOptions {
+  transform?: boolean;
+  disableErrorMessages?: boolean;
+  exceptionFactory?: (errors: ValidationError[]) => any;
+}
+```
+
+您可以在他的库中找到关于 class-validator 包的更多信息。
