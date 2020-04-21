@@ -1,5 +1,5 @@
 [title]: # (NestJS)
-[date]: # (2020-01-25 &nbsp; 19:22:05)
+[date]: # (2020-02-08 &nbsp; 19:22:05)
 [categories]: # (Typescript)
 [description]: # (NestJS是用于构建高效，可扩展的Node.js服务器端应用程序的框架。<br>渐进式JavaScript，内置并完全支持TypeScript。<br>结合了OOP（面向对象编程），FP（函数式编程）和FRP（函数响应式编程）。)
 [image]: # (https://i.loli.net/2020/04/10/YbNBVixDGlqoULe.png)
@@ -1171,4 +1171,89 @@ bootstrap();
 # 管道
 
 管道是具有 @Injectable() 装饰器的类。管道应实现 PipeTransform 接口。
+
+管道有两个类型:
+
+- 转换：管道将输入数据转换为所需的数据输出
+- 验证：对输入数据进行验证，如果验证成功继续传递; 验证失败则抛出异常;
+
+在这两种情况下, 管道 参数(arguments) 会由 控制器(controllers)的路由处理程序 进行处理. Nest 会在调用这个方法之前插入一个管道，管道会先拦截方法的调用参数,进行转换或是验证处理，然后用转换好或是验证好的参数调用原方法。
+
+管道在异常区域内运行。这意味着当抛出异常时，它们由核心异常处理程序和应用于当前上下文的 异常过滤器 处理。当在 Pipe 中发生异常，controller 不会继续执行任何方法。
+
+
+## 内置管道
+
+Nest 自带三个开箱即用的管道，即 ValidationPipe，ParseIntPipe 和 ParseUUIDPipe。他们从 @nestjs/common 包中导出。为了更好地理解它们是如何工作的，我们将从头开始构建它们。
+
+我们从 ValidationPipe. 开始。 首先它只接受一个值并立即返回相同的值，其行为类似于一个标识函数。
+
+```javascript
+// validation.pipe.ts
+
+import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
+
+@Injectable()
+export class ValidationPipe implements PipeTransform {
+  transform(value: any, metadata: ArgumentMetadata) {
+    return value;
+  }
+}
+
+// PipeTransform<T, R> 是一个通用接口，其中 T 表示 value 的类型，R 表示 transform() 方法的返回类型。
+```
+
+每个管道必须提供 transform() 方法。 这个方法有两个参数：
+
+- value
+- metadata
+
+value 是当前处理的参数，而 metadata 是其元数据。元数据对象包含一些属性：
+
+```javascript
+export interface ArgumentMetadata {
+  readonly type: 'body' | 'query' | 'param' | 'custom';
+  readonly metatype?: Type<any>;
+  readonly data?: string;
+}
+```
+
+|参数|描述|
+|:-------|:------:|
+|type | 告诉我们该属性是一个 body @Body()，query @Query()，param @Param() 还是自定义参数 |
+|metatype | 属性的元类型，例如 String。 如果在函数签名中省略类型声明，或者使用原生 JavaScript，则为 undefined。 |
+|data | 传递给装饰器的字符串，例如 @Body('string')。 如果您将括号留空，则为 undefined。 |
+
+TypeScript接口在编译期间消失，所以如果你使用接口而不是类，那么 metatype 的值将是一个 Object。
+
+
+## 测试用例
+
+我们来关注一下 CatsController 的 create() 方法：
+
+```javascript
+// cats.controler.ts
+
+@Post()
+async create(@Body() createCatDto: CreateCatDto) {
+  this.catsService.create(createCatDto);
+}
+
+// create-cat.dto.ts
+
+export class CreateCatDto {
+  readonly name: string;
+  readonly age: number;
+  readonly breed: string;
+}
+```
+
+我们要确保create方法能正确执行，所以必须验证 CreateCatDto 里的三个属性。我们可以在路由处理程序方法中做到这一点，但是我们会打破单个责任原则（SRP）。另一种方法是创建一个验证器类并在那里委托任务，但是不得不每次在方法开始的时候我们都必须使用这个验证器。那么验证中间件呢？ 这可能是一个好主意，但我们不可能创建一个整个应用程序通用的中间件(因为中间件不知道 execution context执行环境,也不知道要调用的函数和它的参数)。
+
+在这种情况下，你应该考虑使用管道。
+
+
+## 对象结构验证
+
+有几种方法可以实现，一种常见的方式是使用基于结构的验证。Joi 库是允许您使用一个可读的 API 以非常简单的方式创建 schema，让我们俩试一下基于 Joi 的验证管道。
 
