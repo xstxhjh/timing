@@ -1443,3 +1443,90 @@ export interface ValidationPipeOptions extends ValidatorOptions {
 
 守卫在所有中间件执行之后执行，但在任何拦截器或管道之前执行。
 
+
+## 授权守卫
+
+正如前面提到的，授权是保护的一个很好的用例，因为只有当调用者(通常是经过身份验证的特定用户)具有足够的权限时，特定的路由才可用。我们现在要构建的 AuthGuard 假设用户是经过身份验证的(因此，请求头附加了一个token)。它将提取和验证token，并使用提取的信息来确定请求是否可以继续。
+
+```javascript
+// auth.guard.ts
+
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    const request = context.switchToHttp().getRequest();
+    return validateRequest(request);
+  }
+}
+```
+
+validateRequest() 函数中的逻辑可以根据需要变得简单或复杂。本例的主要目的是说明保护如何适应请求/响应周期。
+
+每个保护必须实现一个canActivate()函数。此函数应该返回一个布尔值，指示是否允许当前请求。它可以同步或异步地返回响应(通过 Promise 或 Observable)。Nest使用返回值来控制下一个行为:
+
+- 如果返回 true, 将处理用户调用。
+- 如果返回 false, 则 Nest 将忽略当前处理的请求。
+
+
+## 执行上下文
+
+canActivate() 函数接收单个参数 ExecutionContext 实例。ExecutionContext 继承自 ArgumentsHost 。ArgumentsHost 是传递给原始处理程序的参数的包装器，在上面的示例中，我们只是使用了之前在 ArgumentsHost上定义的帮助器方法来获得对请求对象的引用。有关此主题的更多信息。你可以在这里了解到更多(在异常过滤器章节)。
+
+ExecutionContext 提供了更多功能，它扩展了 ArgumentsHost，但是也提供了有关当前执行过程的更多详细信息。
+
+```javascript
+export interface ExecutionContext extends ArgumentsHost {
+  getClass<T = any>(): Type<T>;
+  getHandler(): Function;
+}
+```
+
+getHandler()方法返回对将要调用的处理程序的引用。getClass()方法返回这个特定处理程序所属的 Controller 类的类型。例如，如果当前处理的请求是 POST 请求，目标是 CatsController上的 create() 方法，那么 getHandler() 将返回对 create() 方法的引用，而 getClass()将返回一个CatsControllertype(而不是实例)。
+
+
+## 基于角色认证
+
+一个更详细的例子是一个 RolesGuard 。这个守卫只允许具有特定角色的用户访问。我们将从一个基本模板开始，并在接下来的部分中构建它。目前，它允许所有请求继续:
+
+```javascript
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class RolesGuard implements CanActivate {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    return true;
+  }
+}
+```
+
+
+## 绑定守卫
+
+与管道和异常过滤器一样，守卫可以是控制范围的、方法范围的或全局范围的。下面，我们使用 @UseGuards()装饰器设置了一个控制范围的守卫。这个装饰器可以使用单个参数，也可以使用逗号分隔的参数列表。也就是说，你可以传递几个守卫并用逗号分隔它们。
+
+```javascript
+@Controller('cats')
+@UseGuards(RolesGuard)
+export class CatsController {}
+
+// @UseGuards() 装饰器需要从 @nestjs/common 包导入。
+```
+
+上面的构造将守卫附加到此控制器声明的每个处理程序。如果我们决定只限制其中一个, 我们只需要在方法级别设置守卫。为了绑定全局守卫, 我们使用 Nest 应用程序实例的 useGlobalGuards() 方法:
+
+为了设置一个全局警卫，使用Nest应用程序实例的 useGlobalGuards() 方法：
+
+```javascript
+const app = await NestFactory.create(AppModule);
+app.useGlobalGuards(new RolesGuard());
+
+// 对于混合应用程序，useGlobalGuards() 方法不会为网关和微服务设置守卫。对于“标准”(非混合)微服务应用程序，useGlobalGuards()在全局安装守卫。
+```
