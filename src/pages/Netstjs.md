@@ -1530,3 +1530,33 @@ app.useGlobalGuards(new RolesGuard());
 
 // 对于混合应用程序，useGlobalGuards() 方法不会为网关和微服务设置守卫。对于“标准”(非混合)微服务应用程序，useGlobalGuards()在全局安装守卫。
 ```
+
+全局守卫用于整个应用程序, 每个控制器和每个路由处理程序。在依赖注入方面, 从任何模块外部注册的全局守卫 (如上面的示例中所示) 不能插入依赖项, 因为它们不属于任何模块。为了解决此问题, 您可以使用以下构造直接从任何模块设置一个守卫:
+
+```javascript
+// app.module.ts
+
+import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+
+@Module({
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
+})
+export class AppModule {}
+
+// 当使用此方法为守卫程序执行依赖项注入时，请注意，无论使用此构造的模块是什么，守卫程序实际上是全局的。应该在哪里进行?选择定义守卫的模块(上例中的 RolesGuard)。此外，useClass不是处理自定义 providers 注册的唯一方法。
+``` 
+
+
+---
+
+
+# 拦截器
+
+拦截器是使用 @Injectable() 装饰器注解的类。拦截器应该实现 NestInterceptor 接口。
+
