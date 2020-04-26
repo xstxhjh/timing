@@ -1567,3 +1567,29 @@ export class AppModule {}
 - 转换从函数抛出的异常
 - 扩展基本函数行为
 - 根据所选条件完全重写函数 (例如, 缓存目的)
+
+
+## 基础
+
+每个拦截器都有 intercept() 方法，它接收2个参数。 第一个是 ExecutionContext 实例（与守卫完全相同的对象）。 ExecutionContext 继承自 ArgumentsHost 。 ArgumentsHost 是传递给原始处理程序的参数的一个包装 ，它根据应用程序的类型包含不同的参数数组。
+
+
+## 执行上下文
+
+ExecutionContext 提供了更多功能，它扩展了 ArgumentsHost，但是也提供了有关当前执行过程的更多详细信息。
+
+```javascript
+export interface ExecutionContext extends ArgumentsHost {
+  getClass<T = any>(): Type<T>;
+  getHandler(): Function;
+}
+```
+
+getHandler() 方法返回对当前处理的处理程序的引用,而 getClass() 返回此特定处理程序所属的 Controller 类的类型。用另外的话来说,如果用户指向在 CatsController 中定义和注册的 create() 方法, getHandler() 将返回对 create() 方法的引用，在这种情况下, getClass() 将只返回一个 CatsController 的类型（不是实例）。
+
+
+## 调用处理程序
+
+第二个参数是 CallHandler。如果不手动调用 handle() 方法，则主处理程序根本不会进行求值。这是什么意思？基本上，CallHandler是一个包装执行流的对象，因此推迟了最终的处理程序执行。
+
+比方说，有人提出了 POST /cats 请求。此请求指向在 CatsController 中定义的 create() 处理程序。如果在此过程中未调用拦截器的 handle() 方法，则 create() 方法不会被计算。只有 handle() 被调用（并且已返回值），最终方法才会被触发。为什么？因为Nest订阅了返回的流，并使用此流生成的值来为最终用户创建单个响应或多个响应。而且，handle() 返回一个 Observable，这意味着它为我们提供了一组非常强大的运算符，可以帮助我们进行例如响应操作。
