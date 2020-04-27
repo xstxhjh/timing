@@ -1593,3 +1593,55 @@ getHandler() 方法返回对当前处理的处理程序的引用,而 getClass() 
 第二个参数是 CallHandler。如果不手动调用 handle() 方法，则主处理程序根本不会进行求值。这是什么意思？基本上，CallHandler是一个包装执行流的对象，因此推迟了最终的处理程序执行。
 
 比方说，有人提出了 POST /cats 请求。此请求指向在 CatsController 中定义的 create() 处理程序。如果在此过程中未调用拦截器的 handle() 方法，则 create() 方法不会被计算。只有 handle() 被调用（并且已返回值），最终方法才会被触发。为什么？因为Nest订阅了返回的流，并使用此流生成的值来为最终用户创建单个响应或多个响应。而且，handle() 返回一个 Observable，这意味着它为我们提供了一组非常强大的运算符，可以帮助我们进行例如响应操作。
+
+
+## 截取切面
+
+第一个用例是使用拦截器在函数执行之前或之后添加额外的逻辑。当我们要记录与应用程序的交互时，它很有用，例如 存储用户调用，异步调度事件或计算时间戳。作为一个例子，我们来创建一个简单的例子 LoggingInterceptor。
+
+```javascript
+// logging.interceptor.ts
+
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+@Injectable()
+export class LoggingInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    console.log('Before...');
+
+    const now = Date.now();
+    return next
+      .handle()
+      .pipe(
+        tap(() => console.log(`After... ${Date.now() - now}ms`)),
+      );
+  }
+}
+
+// 拦截器的作用与控制器，提供程序，守卫等相同，这意味着它们可以通过构造函数注入依赖项。
+```
+
+由于 handle() 返回一个RxJS Observable，我们有很多种操作符可以用来操作流。在上面的例子中，我们使用了 tap() 运算符，该运算符在可观察序列的正常或异常终止时调用函数。
+
+
+## 绑定拦截器
+
+为了设置拦截器, 我们使用从 @nestjs/common 包导入的 @UseInterceptors() 装饰器。与守卫一样, 拦截器可以是控制器范围内的, 方法范围内的或者全局范围内的。
+
+```javascript
+// cats.controller.ts
+
+@UseInterceptors(LoggingInterceptor)
+export class CatsController {}
+
+// @UseInterceptors() 装饰器从 @nestjs/common 导入。
+```
+
+由此，CatsController 中定义的每个路由处理程序都将使用 LoggingInterceptor。当有人调用 GET /cats 端点时，您将在控制台窗口中看到以下输出：
+
+```shell
+Before...
+After... 1ms
+```
