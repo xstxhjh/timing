@@ -46,8 +46,8 @@ vue
 或者同react的方式
 
 
-# 条件渲染
+# templates/jsx
 
-vue 的 v-show v-if 更为简单方便
+vue 的 templates，模板指令更为简单方便、直观
 
-react 相比而言不那么优雅
+react 的jsx，相比而言不那么优雅，但灵活性会高一些。
