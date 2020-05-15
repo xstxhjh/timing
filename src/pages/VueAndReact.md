@@ -1,5 +1,21 @@
 
 
+
+# 编程思想对比
+
+React就是MVC里的V,只专注视图层,而Vue才算是MVVM框架,双向绑定是特色之一.
+React + Redux 可以实现 MVC  的思想
+React + Mobx  可以实现 MVVM 的思想
+
+vue 本质是MVVM框架，由MVC发展而来
+react 本质是前端组件化框架，由后端组件化发展而来
+
+react 和 vue 组件化的思想大同小异，数据传递都是单向的。
+
+vue 内置了很多强大的功能，如component、slot 来满足你组件化的需求，需要阅读文档，但后续便捷开发。
+react 使用 props 传递组件，通过js来操作一切。
+
+
 # 传送门 Portal
 
 React v16之前 unstable_renderSubtreeIntoContainer，
@@ -51,18 +67,3 @@ vue
 vue 的 templates，模板指令更为简单方便、直观
 
 react 的jsx，相比而言不那么优雅，但灵活性会高一些。
-
-
-# 对比
-
-React就是MVC里的V,只专注视图层,而Vue才算是MVVM框架,双向绑定是特色之一.
-React + Redux 可以实现 MVC  的思想
-React + Mobx  可以实现 MVVM 的思想
-
-vue 本质是MVVM框架，由MVC发展而来
-react 本质是前端组件化框架，由后端组件化发展而来
-
-react 和 vue 组件化的思想大同小异，数据传递都是单向的。
-
-vue 内置了很多强大的功能，如component、slot 来满足你组件化的需求，需要阅读文档，但后续便捷开发。
-react 使用 props 传递组件，通过js来操作一切。
