@@ -67,3 +67,11 @@ vue
 vue 的 templates，模板指令更为简单方便、直观
 
 react 的jsx，相比而言不那么优雅，但灵活性会高一些。
+
+
+# 搜索引擎优化
+
+Google/Yahoo/Bing/Duck Duck Go 都能抓取出 JS 渲染后的内容作为文章的描述
+但百度的搜索引擎不能
+
+https://www.freecodecamp.org/news/seo-vs-react-is-it-neccessary-to-render-react-pages-in-the-backend-74ce5015c0c9/
