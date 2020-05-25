@@ -382,6 +382,8 @@ declare namespace foo {
 
 ### 自动生成声明文件
 
+如果库的源码本身就是由 ts 写的，那么在使用 tsc 脚本将 ts 编译为 js 的时候，添加 declaration 选项，就可以同时也生成 .d.ts 声明文件了。
+
 ```json
 {
     "compilerOptions": {
@@ -391,4 +393,16 @@ declare namespace foo {
     }
 }
 ```
+
+
+## 内置对象
+
+内置对象是指根据标准在全局作用域上存在的对象。这里的标准是指 ECMAScript 和其他环境（比如 DOM）的标准。
+
+DOM 和 BOM 提供的内置对象有：
+Document、HTMLElement、Event、NodeList 等。
+
+[TypeScript 核心库的定义文件](https://github.com/Microsoft/TypeScript/tree/master/src/lib") 中定义了所有浏览器环境需要用到的类型，并且是预置在 TypeScript 中的。
+
+
 
