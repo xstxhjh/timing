@@ -262,3 +262,133 @@ function reverse(x: number | string): number | string {
     }
 }
 ```
+
+
+## 类型断言
+
+类型断言可以用来手动指定一个值的类型。
+
+```javascript
+<类型>值
+// 或者
+值 as 类型
+```
+
+```javascript
+function getLength(something: string | number): number {
+    if ((<string>something).length) {
+        return (<string>something).length;
+    } else {
+        return something.toString().length;
+    }
+}
+```
+
+类型断言不是类型转换，断言成一个联合类型中不存在的类型是不允许的。
+
+
+## 声明文件
+
+declare var 声明全局变量
+declare function 声明全局方法
+declare class 声明全局类
+declare enum 声明全局枚举类型
+declare namespace 声明（含有子属性的）全局对象
+interface 和 type 声明全局类型
+export 导出变量
+export namespace 导出（含有子属性的）对象
+export default ES6 默认导出
+export = commonjs 导出模块
+export as namespace UMD 库声明全局变量
+declare global 扩展全局变量
+declare module 扩展模块
+/// <reference /> 三斜线指令
+
+通常我们会把声明语句放到一个单独的文件（jQuery.d.ts）中，这就是声明文件。
+
+```javascript
+// src/jQuery.d.ts
+declare var jQuery: (selector: string) => any;
+
+// src/index.ts
+jQuery('#foo');
+```
+
+使用 @types 统一管理第三方库的声明文件。
+
+```
+npm install @types/jquery --save-dev
+```
+
+### npm 包
+
+```javascript
+// types/foo/index.d.ts
+
+declare const name: string;
+declare function getName(): string;
+declare class Animal {
+    constructor(name: string);
+    sayHi(): string;
+}
+declare enum Directions {
+    Up,
+    Down,
+    Left,
+    Right
+}
+interface Options {
+    data: any;
+}
+
+export { name, getName, Animal, Directions, Options };
+```
+
+对应的导入和使用模块应该是这样：
+
+```javascript
+// src/index.ts
+
+import { name, getName, Animal, Directions, Options } from 'foo';
+
+console.log(name);
+let myName = getName();
+let cat = new Animal('Tom');
+let directions = [Directions.Up, Directions.Down, Directions.Left, Directions.Right];
+let options: Options = {
+    data: {
+        name: 'foo'
+    }
+};
+```
+
+### UMD 库
+
+既可以通过 `<script>` 标签引入，又可以通过 import 导入的库，称为 UMD 库。
+
+一般使用 export as namespace 时，都是先有了 npm 包的声明文件，再基于它添加一条 export as namespace 语句，即可将声明好的一个变量声明为全局变量。
+
+```javascript
+// types/foo/index.d.ts
+
+export as namespace foo;
+export default foo;
+
+declare function foo(): string;
+declare namespace foo {
+    const bar: number;
+}
+```
+
+### 自动生成声明文件
+
+```json
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "outDir": "lib",
+        "declaration": true,
+    }
+}
+```
+
