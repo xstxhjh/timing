@@ -505,38 +505,6 @@ console.log(Days[6] === "Sat"); // true
 
 接口（Interfaces）：不同类之间公有的属性或方法，可以抽象成一个接口。接口可以被类实现（implements）。一个类只能继承自另一个类，但是可以实现多个接口
 
-```javascript
-interface Alarm {
-    alert(): void;
-}
-
-interface Light {
-    lightOn(): void;
-    lightOff(): void;
-}
-
-class Door {
-}
-
-class SecurityDoor extends Door implements Alarm {
-    alert() {
-        console.log('SecurityDoor alert');
-    }
-}
-
-class Car implements Alarm, Light {
-    alert() {
-        console.log('Car alert');
-    }
-    lightOn() {
-        console.log('Car light on');
-    }
-    lightOff() {
-        console.log('Car light off');
-    }
-}
-```
-
 ## ES6 中类的用法
 
 ### 属性和方法
@@ -706,4 +674,105 @@ class Animal {
 
 let a: Animal = new Animal('Jack');
 console.log(a.sayHi()); // My name is Jack
+```
+
+
+---
+
+# 类与接口
+
+接口（Interfaces）可以用于对「对象的形状（Shape）」进行描述。
+
+另一用途，对类的一部分行为进行抽象。
+
+## 类实现接口
+
+实现（implements）是面向对象中的一个重要概念。一般来讲，一个类只能继承自另一个类，有时候不同类之间可以有一些共有的特性，这时候就可以把特性提取成接口（interfaces），用 implements 关键字来实现。这个特性大大提高了面向对象的灵活性。
+
+```javascript
+interface Alarm {
+    alert(): void;
+}
+
+interface Light {
+    lightOn(): void;
+    lightOff(): void;
+}
+
+class Door {
+}
+
+class SecurityDoor extends Door implements Alarm {
+    alert() {
+        console.log('SecurityDoor alert');
+    }
+}
+
+// 一个类可以实现多个接口
+class Car implements Alarm, Light {
+    alert() {
+        console.log('Car alert');
+    }
+    lightOn() {
+        console.log('Car light on');
+    }
+    lightOff() {
+        console.log('Car light off');
+    }
+}
+```
+
+
+## 接口继承接口
+
+```javascript
+interface Alarm {
+    alert();
+}
+
+interface LightableAlarm extends Alarm {
+    lightOn();
+    lightOff();
+}
+```
+
+
+## 接口继承类
+
+```javascript
+class Point {
+    x: number;
+    y: number;
+}
+
+interface Point3d extends Point {
+    z: number;
+}
+
+let point3d: Point3d = {x: 1, y: 2, z: 3};
+```
+
+
+## 混合类型
+
+一个对象可以同时做为函数和对象使用，并带有额外的属性
+
+```typescript
+interface Counter {
+    (start: number): string;
+    interval: number;
+    reset(): void;
+}
+
+function getCounter(): Counter {
+    let counter = <Counter>function (start: number) { };
+    counter.interval = 123;
+    counter.reset = function () { };
+    return counter;
+}
+
+let c = getCounter();
+c(10);
+c.reset();
+c.interval = 5.0;
 ```
