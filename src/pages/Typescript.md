@@ -406,3 +406,76 @@ Document、HTMLElement、Event、NodeList 等。
 
 
 
+---
+
+# 进阶
+
+## 类型别名
+
+类型别名用来给一个类型起个新名字。
+
+```javascript
+type Name = string;
+type NameResolver = () => string;
+type NameOrResolver = Name | NameResolver;
+function getName(n: NameOrResolver): Name {
+    if (typeof n === 'string') {
+        return n;
+    } else {
+        return n();
+    }
+}
+```
+
+
+## 字符串字面量类型
+
+字符串字面量类型用来约束取值只能是某几个字符串中的一个。
+
+```javascript
+type EventNames = 'click' | 'scroll' | 'mousemove';
+function handleEvent(ele: Element, event: EventNames) {
+    // do something
+}
+
+handleEvent(document.getElementById('hello'), 'scroll');  // 没问题
+handleEvent(document.getElementById('world'), 'dbclick'); // 报错，event 不能为 'dbclick'
+```
+
+
+## 元组
+
+数组合并了相同类型的对象，而元组（Tuple）合并了不同类型的对象。
+元组起源于函数编程语言（如 F#），这些语言中会频繁使用元组。
+
+```javascript
+let tom: [string, number];
+tom[0] = 'Tom';
+tom[1] = 25;
+
+tom[0].slice(1);
+tom[1].toFixed(2);
+
+tom = ['Jack', 21];
+```
+
+当添加越界的元素时，它的类型会被限制为元组中每个类型的联合类型。
+
+
+## 枚举
+
+枚举（Enum）类型用于取值被限定在一定范围内的场景，比如一周只能有七天，颜色限定为红绿蓝等。
+
+```javascript
+enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
+
+console.log(Days["Sun"] === 0); // true
+console.log(Days["Mon"] === 1); // true
+console.log(Days["Tue"] === 2); // true
+console.log(Days["Sat"] === 6); // true
+
+console.log(Days[0] === "Sun"); // true
+console.log(Days[1] === "Mon"); // true
+console.log(Days[2] === "Tue"); // true
+console.log(Days[6] === "Sat"); // true
+```
