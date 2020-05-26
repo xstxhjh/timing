@@ -595,3 +595,115 @@ let a = new Animal('Kitty'); // setter: Kitty
 a.name = 'Tom'; // setter: Tom
 console.log(a.name); // Jack
 ```
+
+## ES7 中类的用法
+
+### 静态方法
+
+使用 static 修饰符修饰的方法称为静态方法，它们不需要实例化，而是直接通过类来调用：
+
+```javascript
+class Animal {
+    static isAnimal(a) {
+        return a instanceof Animal;
+    }
+}
+
+let a = new Animal('Jack');
+Animal.isAnimal(a); // true
+a.isAnimal(a); // TypeError: a.isAnimal is not a function
+```
+
+### 实例属性
+ES6 中实例的属性只能通过构造函数中的 this.xxx 来定义，ES7 提案中可以直接在类里面定义：
+
+```javascript
+class Animal {
+    name = 'Jack';
+
+    constructor() {
+        // ...
+    }
+}
+
+let a = new Animal();
+console.log(a.name); // Jack
+```
+
+### 静态属性
+
+ES7 提案中，可以使用 static 定义一个静态属性：
+
+```javascript
+class Animal {
+    static num = 42;
+
+    constructor() {
+        // ...
+    }
+}
+
+console.log(Animal.num); // 42
+```
+
+
+## TypeScript 中类的用法
+
+public 修饰的属性或方法是公有的，可以在任何地方被访问到，默认所有的属性和方法都是 public 的
+private 修饰的属性或方法是私有的，不能在声明它的类的外部访问
+protected 修饰的属性或方法是受保护的，它和 private 类似，区别是它在子类中也是允许被访问的
+
+readonly 只读属性关键字，只允许出现在属性声明或索引签名中。
+注意如果 readonly 和其他访问修饰符同时存在的话，需要写在其后面。
+
+```javascript
+class Animal {
+    // public readonly name;
+    public constructor(public readonly name) {
+        // this.name = name;
+    }
+}
+```
+
+### 抽象类
+
+abstract 用于定义抽象类和其中的抽象方法。
+
+抽象类是不允许被实例化
+抽象类中的抽象方法必须被子类实现
+
+```javascript
+abstract class Animal {
+    public name;
+    public constructor(name) {
+        this.name = name;
+    }
+    public abstract sayHi();
+}
+
+class Cat extends Animal {
+    public sayHi() {
+        console.log(`Meow, My name is ${this.name}`);
+    }
+}
+
+let cat = new Cat('Tom');
+```
+
+
+## 类的类型
+
+```javascript
+class Animal {
+    name: string;
+    constructor(name: string) {
+        this.name = name;
+    }
+    sayHi(): string {
+      return `My name is ${this.name}`;
+    }
+}
+
+let a: Animal = new Animal('Jack');
+console.log(a.sayHi()); // My name is Jack
+```
