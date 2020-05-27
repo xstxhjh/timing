@@ -1,8 +1,15 @@
 [title]: # (Typescript文档笔记)
 [date]: # (2019-10-13 &nbsp; 22:15:42)
 [categories]: # (Typescript)
-[description]: # ()
+[description]: # (TypeScript 是 JavaScript 的一个超集，主要提供了类型系统和对 ES6 的支持，由 Microsoft 开发。)
 [image]: # (https://i.loli.net/2020/04/10/hwr6LAyOuk3lXWS.png)
+
+---
+
+# Typescript
+
+TypeScript 是 JavaScript 的一个超集，主要提供了类型系统和对 ES6 的支持，由 Microsoft 开发。
+
 
 ---
 

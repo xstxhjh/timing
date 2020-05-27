@@ -1,8 +1,8 @@
-[title]: # (Typescript文档笔记)
-[date]: # (2019-10-13 &nbsp; 22:15:42)
-[categories]: # (Typescript)
-[description]: # ()
-[image]: # (https://i.loli.net/2020/04/10/hwr6LAyOuk3lXWS.png)
+[title]: # (Vue、React的异同)
+[date]: # (2020-05-08 &nbsp; 21:36:53)
+[categories]: # (VUE)
+[description]: # (思考及总结Vue和React编程上的一些差异)
+[image]: # (https://i.loli.net/2020/05/27/mNj9uaV3Z7rz5lC.jpg)
 
 ---
 
