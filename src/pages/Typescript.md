@@ -784,7 +784,7 @@ c.interval = 5.0;
 
 泛型（Generics）是指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定类型的一种特性。
 
-```typescript
+```javascript
 function createArray<T>(length: number, value: T): Array<T> {
     let result: T[] = [];
     for (let i = 0; i < length; i++) {
@@ -800,7 +800,7 @@ createArray<string>(3, 'x'); // ['x', 'x', 'x']
 
 ## 多个类型参数
 
-```typescript
+```javascript
 function swap<T, U>(tuple: [T, U]): [U, T] {
     return [tuple[1], tuple[0]];
 }
@@ -812,7 +812,7 @@ swap([7, 'seven']); // ['seven', 7]
 
 我们可以对泛型进行约束，只允许这个函数传入那些包含 length 属性的变量。
 
-```typescript
+```javascript
 interface Lengthwise {
     length: number;
 }
@@ -825,7 +825,7 @@ function loggingIdentity<T extends Lengthwise>(arg: T): T {
 
 ## 泛型接口
 
-```typescript
+```javascript
 interface CreateArrayFunc<T> {
     (length: number, value: T): Array<T>;
 }
@@ -844,7 +844,7 @@ createArray(3, 'x'); // ['x', 'x', 'x']
 
 ## 泛型类
 
-```typescript
+```javascript
 class GenericNumber<T> {
     zeroValue: T;
     add: (x: T, y: T) => T;
@@ -857,7 +857,7 @@ myGenericNumber.add = function(x, y) { return x + y; };
 
 ## 泛型参数的默认类型
 
-```typescript
+```javascript
 function createArray<T = string>(length: number, value: T): Array<T> {
     let result: T[] = [];
     for (let i = 0; i < length; i++) {
@@ -866,3 +866,67 @@ function createArray<T = string>(length: number, value: T): Array<T> {
     return result;
 }
 ```
+
+
+---
+
+# 声明合并
+
+如果定义了两个相同名字的函数、接口或类，那么它们会合并成一个类型。
+
+## 函数的合并
+
+我们可以使用重载定义多个函数类型
+
+```javascript
+function reverse(x: number): number;
+function reverse(x: string): string;
+function reverse(x: number | string): number | string {
+    if (typeof x === 'number') {
+        return Number(x.toString().split('').reverse().join(''));
+    } else if (typeof x === 'string') {
+        return x.split('').reverse().join('');
+    }
+}
+```
+
+## 接口的合并
+
+合并的属性的类型必须是唯一的
+
+```javascript
+interface Alarm {
+    price: number;
+}
+interface Alarm {
+    weight: number;
+}
+```
+
+接口中方法的合并，与函数的合并一样
+
+```javascript
+interface Alarm {
+    price: number;
+    alert(s: string): string;
+}
+interface Alarm {
+    weight: number;
+    alert(s: string, n: number): string;
+}
+
+// 相当于
+
+interface Alarm {
+    price: number;
+    weight: number;
+    alert(s: string): string;
+    alert(s: string, n: number): string;
+}
+```
+
+## 类的合并
+
+类的合并与接口的合并规则一致。
+
+
