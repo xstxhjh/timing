@@ -757,7 +757,7 @@ let point3d: Point3d = {x: 1, y: 2, z: 3};
 
 一个对象可以同时做为函数和对象使用，并带有额外的属性
 
-```typescript
+```javascript
 interface Counter {
     (start: number): string;
     interval: number;
@@ -775,4 +775,94 @@ let c = getCounter();
 c(10);
 c.reset();
 c.interval = 5.0;
+```
+
+
+---
+
+# 泛型
+
+泛型（Generics）是指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定类型的一种特性。
+
+```typescript
+function createArray<T>(length: number, value: T): Array<T> {
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+
+createArray<string>(3, 'x'); // ['x', 'x', 'x']
+```
+
+上例中，我们在函数名后添加了 <T>，其中 T 用来指代任意输入的类型，在后面的输入 value: T 和输出 Array<T> 中即可使用了。
+
+## 多个类型参数
+
+```typescript
+function swap<T, U>(tuple: [T, U]): [U, T] {
+    return [tuple[1], tuple[0]];
+}
+
+swap([7, 'seven']); // ['seven', 7]
+```
+
+## 泛型约束
+
+我们可以对泛型进行约束，只允许这个函数传入那些包含 length 属性的变量。
+
+```typescript
+interface Lengthwise {
+    length: number;
+}
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+    console.log(arg.length);
+    return arg;
+}
+```
+
+## 泛型接口
+
+```typescript
+interface CreateArrayFunc<T> {
+    (length: number, value: T): Array<T>;
+}
+
+let createArray: CreateArrayFunc<any>;
+createArray = function<T>(length: number, value: T): Array<T> {
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+
+createArray(3, 'x'); // ['x', 'x', 'x']
+```
+
+## 泛型类
+
+```typescript
+class GenericNumber<T> {
+    zeroValue: T;
+    add: (x: T, y: T) => T;
+}
+
+let myGenericNumber = new GenericNumber<number>();
+myGenericNumber.zeroValue = 0;
+myGenericNumber.add = function(x, y) { return x + y; };
+```
+
+## 泛型参数的默认类型
+
+```typescript
+function createArray<T = string>(length: number, value: T): Array<T> {
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
 ```
