@@ -166,7 +166,6 @@ export default {
         margin: 2rem 0 1.4rem;
         transition: 0.1s all linear;
         display: inline-block;
-        position: relative;
         cursor: pointer;
     }
     .post-header-title:before {
@@ -195,6 +194,7 @@ export default {
 .post-body {
     width: 90%;
     margin: 0 auto;
+    position: relative;
     .post-body-image {
         max-width: 100%;
         padding: 0.3rem;
