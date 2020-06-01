@@ -6,6 +6,11 @@ import axios from './utils/request'
 import './permission' // 路由权限控制
 import '@/utils/icons' // svg-icon组件
 
+import 'setimmediate'
+import 'process'
+console.log(setImmediate)
+console.log(process)
+
 Vue.prototype.$TweenMax = TweenMax
 Vue.prototype.$axios = axios
 

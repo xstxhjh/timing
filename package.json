@@ -7,7 +7,8 @@
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
         "lint": "vue-cli-service lint",
-        "env": "env"
+        "env": "env",
+        "analyzer": "vue-cli-service serve --mode=analyzer"
     },
     "dependencies": {
         "axios": "^0.19.0",
@@ -29,7 +30,8 @@
         "pug-plain-loader": "^1.0.0",
         "svg-sprite-loader": "^4.1.6",
         "uglifyjs-webpack-plugin": "^2.2.0",
-        "vue-template-compiler": "^2.6.10"
+        "vue-template-compiler": "^2.6.10",
+        "webpack-bundle-analyzer": "^3.8.0"
     },
     "eslintConfig": {
         "root": true,

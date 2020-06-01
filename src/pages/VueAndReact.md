@@ -118,4 +118,6 @@ Google/Yahoo/Bing/Duck Duck Go 都能抓取出 JS 渲染后的内容作为文章
 
 https://www.freecodecamp.org/news/seo-vs-react-is-it-neccessary-to-render-react-pages-in-the-backend-74ce5015c0c9/
 
+# 防止注入攻击
 
+JSX、templates 渲染之前, virtual DOM 会转义渲染的数据。 从而保证用户无法注入任何应用之外的代码。在被渲染之前，所有的数据都被转义成为了字符串处理。 以避免 XSS(跨站脚本) 攻击。

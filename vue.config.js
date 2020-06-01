@@ -97,6 +97,12 @@ module.exports = {
             .options({
                 symbolId: 'icon-[name]'
             })
+        
+        if(process.mode == 'analyzer') {
+              config
+                  .plugin('webpack-bundle-analyzer')
+                  .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+        }
     },
 
     css: {

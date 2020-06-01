@@ -19,7 +19,7 @@ export default {
                 主体框架：Vue-cli3、Vue-router、Vuex、axios。<br />
                 迅捷开发：pug、scss、moment.js、pace.js、highlight.js、TweenMax.js。<br/>
                 项目优化：cdn、svg、md。<br/>`,
-			Profile: `技术栈：Vue、小程序、Node.js、Mongodb、Mysql、PHP、photoshop、Hexo、Linux、Shell<br/>
+			Profile: `技术栈：Vue、React、小程序、Node.js、Mongodb、Mysql、PHP、photoshop、Hexo、Linux、Shell<br/>
                 简述：不要忘了和大家一起交流，这样你的作品才会出彩~！<br/>
                 QQ：573363596<br/>
                 微信：xstxhjh`
