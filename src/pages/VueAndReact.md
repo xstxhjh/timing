@@ -45,7 +45,9 @@ React 通过 context 实现
 
 Vue 对 class 与 style 特意做了增强，可以传字符串、对象、数组
 
-React 使用 className 用于指定 class，不能直接为组件指定 class
+CSS-in-JS 在 React 社区的热度是最高的
+
+Vue 更适合搭配使用 Scss、less 等 css 预处理器
 
 ## 组件生命周期
 
