@@ -23,7 +23,7 @@ export default {
 				title,
 				date,
 				categories,
-				description,
+				description,  
 				image,
 				timeDate: item.timeDate,
                 routeName: item.routeName,
