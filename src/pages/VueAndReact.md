@@ -70,6 +70,8 @@ React 的生命周期
 - componentDidUpdate
 - render
 
+React Hooks 弱化了组件生命周期的概念，类组件也废弃了componentWillMount、 componentWillUpdate、 componentWillReceiveProps 这些生命周期方法。
+
 ## 阻止默认行为/阻止冒泡
 Vue 事件修饰符
  - stop
