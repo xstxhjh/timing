@@ -29,6 +29,8 @@ Vue 组件定义使用 *.vue 文件将 html、css、js 结合在一起。templat
 
 React 使用 jsx/js 文件来表示组件，通过 js 来操作一切。
 
+
+
 ## 父子组件数据传递
 
 Vue 使用 props 传递数据，$emit触发自定义事件 的方式
@@ -84,6 +86,11 @@ React
 
 Vue 通过各种修饰符来帮助开发人员，React 贴近于原生 Dom 元素的事件处理。
 
+## 更新粒度
+
+Vue 每个组件都有自己的 渲染watcher，它掌管了当前组件的视图更新，但不会掌管子组件的更新。当数据更新传递时，props 上的属性都是响应式的，所以只会触发更新需要渲染的内容。
+
+React 自顶向下的进行递归更新，由于没有响应式收集依赖（基于Object.defineProperty 或 Proxy），React 只能递归把所有组件都 render 一遍，然后通过 diff算法 决定更新哪部分视图。通过 shouldComponentUpdate 钩子函数决定是否更新、对比虚拟DOM，React 会非常频繁的调用这个函数。
 
 # Portal、Fragment 方式的挂载
 
