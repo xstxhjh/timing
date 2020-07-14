@@ -11,6 +11,9 @@ import 'process'
 console.log(setImmediate)
 console.log(process)
 
+import data from "core-js"
+console.log(data)
+
 Vue.prototype.$TweenMax = TweenMax
 Vue.prototype.$axios = axios
 
