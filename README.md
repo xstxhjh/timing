@@ -22,6 +22,7 @@ yarn build
 git add -f dist
 git commit -am ''
 git subtree push --prefix dist origin gh-pages
+// 如有问题 请参考 https://gist.github.com/cobyism/4730490#gistcomment-2337463
 -->
 
 ## Project progress
