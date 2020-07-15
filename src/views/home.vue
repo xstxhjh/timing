@@ -167,6 +167,7 @@ export default {
         transition: 0.1s all linear;
         display: inline-block;
         cursor: pointer;
+        position: relative;
     }
     .post-header-title:before {
         content: "";
