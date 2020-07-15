@@ -22,8 +22,6 @@ yarn build
 git add -f dist
 git commit -am ''
 git subtree push --prefix dist origin gh-pages
-
-// 如果 gh-pages 需要 pull 执行 git pull --rebase origin master
 -->
 
 ## Project progress
