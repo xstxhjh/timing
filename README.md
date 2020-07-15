@@ -17,9 +17,12 @@ vue ui
 ```
 
 <!-- npx browserslist 查看浏览器css兼容情况 -->
-<!-- git add -f dist
+<!--
+yarn build
+git add -f dist
 git commit -am ''
-git subtree push --prefix dist origin gh-pages -->
+git subtree push --prefix dist origin gh-pages
+-->
 
 ## Project progress
 
