@@ -14,17 +14,17 @@ export default {
 		let arr = []
 		data.map(item => {
 			let fileContent = item.fileContent
-			let title = fileContent.match(/\[title\]:#\((.*?)\)/)[1]
-			let date = fileContent.match(/\[date\]:#\((.*?)\)/)[1]
-			let categories = fileContent.match(/\[categories\]:#\((.*?)\)/)[1]
-			let description = fileContent.match(/\[description\]:#\((.*?)\)/)[1]
-			let image = fileContent.match(/\[image\]:#\((.*?)\)/)[1]
+			let title = fileContent.match(/\[title\]:#\((.*?)\)/)
+			let date = fileContent.match(/\[date\]:#\((.*?)\)/)
+			let categories = fileContent.match(/\[categories\]:#\((.*?)\)/)
+			let description = fileContent.match(/\[description\]:#\((.*?)\)/)
+			let image = fileContent.match(/\[image\]:#\((.*?)\)/)
 			arr.push({
-				title,
-				date,
-				categories,
-				description,  
-				image,
+				title: title && title[1],
+				date: date&& date[1],
+				categories: categories && categories[1],
+				description: description && categories[1],  
+				image: image && categories[1],
 				timeDate: item.timeDate,
                 routeName: item.routeName,
                 wordCount: item.wordCount

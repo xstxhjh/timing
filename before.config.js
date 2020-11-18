@@ -25,10 +25,13 @@ function beforeFn() {
         let fileSync = fs.readFileSync(resolve(`src/pages/${item}`), 'utf-8')
 
         let str = fileSync.split('---')[0].replace(/\s*/g, '')
-        let timeDate = str.match(/\[date\]:#\((.*?)\)/)[1].replace(/-|&nbsp;|:/g, '')
+        let data = str.match(/\[date\]:#\((.*?)\)/)
+        let timeDate = data && data[1].replace(/-|&nbsp;|:/g, '')
+        let index = item.indexOf(".");
+        let route = item.substring(0, index)
         mdArr.push({
             fileName: item,
-            routeName: item.match(/(\S*)\./)[1],
+            routeName: route,
             fileContent: str,
             timeDate: timeDate,
             wordCount: fileSync.length - str.length
