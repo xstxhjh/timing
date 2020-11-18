@@ -24,7 +24,7 @@ export default {
 				date: date&& date[1],
 				categories: categories && categories[1],
 				description: description && categories[1],  
-				image: image && categories[1],
+				image: image && image[1],
 				timeDate: item.timeDate,
                 routeName: item.routeName,
                 wordCount: item.wordCount
